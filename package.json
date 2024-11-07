@@ -1,0 +1,33 @@
+{
+  "name": "Plutonia",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=dev electron .",
+    "dev": "cross-env NODE_ENV=dev nodemon --exec npm start",
+    "build": "node build.js --obf=true --build=platform",
+    "icon": "node build.js --icon=https://img.plutonia-mc.fr/iconLauncher.png"
+  },
+  "dependencies": {
+    "@xmcl/core": "^2.13.0",
+    "@xmcl/installer": "^5.4.0",
+    "axios": "^1.7.7",
+    "decompress": "^4.2.1",
+    "electron-updater": "^6.3.9",
+    "fs-extra": "^11.2.0",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8",
+    "javascript-obfuscator": "^4.1.1",
+    "jimp": "^1.6.0",
+    "nodemon": "^3.1.7",
+    "png2icons": "^2.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Koora7334/Plutonia-Launcher.git"
+  }
+}
