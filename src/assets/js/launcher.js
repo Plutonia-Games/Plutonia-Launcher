@@ -185,6 +185,7 @@ playButton.addEventListener('click', async (_) => {
 
   await launchGame({
     gamePath: gamePath,
+    version: latestVersion.id,
     javaPath: javaPath.path,
     authResult: authResult,
   });
@@ -378,7 +379,7 @@ async function launchGame(args) {
   const start = await launch({
     gamePath: args.gamePath,
     javaPath: args.javaPath,
-    version: '1.8.9',
+    version: args.version,
     accessToken: args.authResult.token,
     gameProfile: {
       name: args.authResult.name,
