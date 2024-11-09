@@ -7,7 +7,7 @@ const decompress = require('decompress');
 const nodeFetch = require('node-fetch');
 
 const EventEmitter = require('events');
-const Downloader = require('../../../assets/js/utils/downloader.js');
+const Downloader = require('./downloader.js');
 
 class JavaDownloader extends EventEmitter {
   /**
