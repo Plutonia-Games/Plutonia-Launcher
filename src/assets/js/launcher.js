@@ -140,15 +140,17 @@ playButton.addEventListener('click', async (_) => {
     return disableFields(false);
   }
 
+  let latestVersion = undefined;
+
   try {
-    await downloadJar(gamePath);
+    latestVersion = await downloadJar(gamePath);
   } catch (error) {
     console.error('Impossible de récupérer la version :', error);
     setErrorMessage('Impossible de récupérer la version...');
     return disableFields(false);
   }
 
-  const resolvedVersion = await Version.parse(gamePath, '1.8.9');
+  const resolvedVersion = await Version.parse(gamePath, latestVersion.id);
 
   try {
     await downloadLibrairies(resolvedVersion);
@@ -284,6 +286,8 @@ async function downloadJar(gamePath) {
   setMessage('Vérification de la version terminé.');
 
   setProgress(100);
+
+  return latestVersion;
 }
 
 async function downloadCustomAssets(gamePath) {

@@ -152,7 +152,6 @@ function getLauncherPath() {
     (os.platform() !== 'darwin' ? '.' : '') + 'plutonia'
   );
 }
-
 /* Directories */
 
 /* Updater listeners */
