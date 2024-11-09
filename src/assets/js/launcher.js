@@ -339,7 +339,7 @@ async function downloadLibrairies(resolvedVersion) {
 
 async function downloadAssets(resolvedVersion) {
   const installTask = installAssetsTask(resolvedVersion, {
-    assetsHost: 'https://assets.plutonia.download/',
+    assetsHost: 'https://versions.plutonia.download/assets/objects',
   });
 
   console.log('Vérification des assets...');
