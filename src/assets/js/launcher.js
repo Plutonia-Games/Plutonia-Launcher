@@ -38,9 +38,7 @@ const progressBarText = document.querySelector('.progress-text');
 /* Registering listeners */
 window.addEventListener('load', async () => await loadCredentials());
 
-closeButton.addEventListener('click', async (_) => {
-  ipcRenderer.send('main-window-close');
-});
+closeButton.addEventListener('click', async (_) => ipcRenderer.send('main-window-close'));
 
 settingsButton.addEventListener('click', async (_) => {
   ipcRenderer.send('show-options');
@@ -66,6 +64,12 @@ document.addEventListener('keydown', (e) => {
   }
 });
 /* Open devTool console */
+
+password.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    playButton.click();
+  }
+});
 
 playButton.addEventListener('click', async (_) => {
   disableFields(true);
