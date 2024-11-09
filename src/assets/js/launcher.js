@@ -4,11 +4,8 @@ const { ipcRenderer } = require('electron');
 const AuthWorker = require('./assets/js/workers/auth-worker.js');
 const authWorker = new AuthWorker();
 
-const { JavaDownloader } = require('./assets/js/workers/java-downloader.js');
+const { JavaDownloader } = require('./assets/js/utils/java-downloader.js');
 const javaDownloader = new JavaDownloader();
-
-const { CustomAssets } = require('./assets/js/workers/custom-assets.js');
-const customAssets = new CustomAssets();
 
 const {
   installLibrariesTask,
@@ -173,16 +170,6 @@ playButton.addEventListener('click', async (_) => {
     return disableFields(false);
   }
 
-  try {
-    await downloadCustomAssets(gamePath);
-  } catch (error) {
-    console.error("Erreur lors de l'installation des assets (custom) :", error);
-    setErrorMessage(
-      "Une erreur s'est produite lors de l'installation des assets."
-    );
-    return disableFields(false);
-  }
-
   await launchGame({
     gamePath: gamePath,
     version: latestVersion.id,
@@ -289,29 +276,6 @@ async function downloadJar(gamePath) {
   setProgress(100);
 
   return latestVersion;
-}
-
-async function downloadCustomAssets(gamePath) {
-  console.log('Vérification des assets...');
-  setMessage('Vérification des assets...');
-
-  setProgress(0);
-
-  customAssets.on('progress', ({ current, total }) => {
-    const percent = Math.round((current / total) * 100);
-
-    console.log(`Téléchargement des assets en cours... (${percent}%)`);
-    setMessage(`Téléchargement des assets en cours... (${percent}%)`);
-
-    setProgress(percent);
-  });
-
-  await customAssets.update(gamePath);
-
-  console.log('Vérification des assets terminé.');
-  setMessage('Vérification des assets terminé.');
-
-  setProgress(100);
 }
 
 async function downloadLibrairies(resolvedVersion) {
