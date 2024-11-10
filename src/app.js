@@ -100,6 +100,8 @@ ipcMain.on('hide-options', () => OptionWindow.hideWindow());
 
 /* Open the main window */
 function openMainWindow() {
+  UpdateWindow.destroyWindow();
+  
   OptionWindow.createWindow();
   TfaWindow.createWindow();
 
