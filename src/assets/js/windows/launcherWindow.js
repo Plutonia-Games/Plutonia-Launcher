@@ -45,6 +45,7 @@ function createWindow() {
   Menu.setApplicationMenu(null);
 
   mainWindow.setMenuBarVisibility(false);
+  mainWindow.setBounds({ x: 0, y: 0, width: 761, height: 824 });
   mainWindow.loadFile(path.join(`${app.getAppPath()}/src/launcher.html`));
 
   mainWindow.once('ready-to-show', () => {
