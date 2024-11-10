@@ -32,6 +32,7 @@ function createWindow() {
     width: 400,
     height: 500,
     resizable: false,
+    useContentSize: true,
     icon: './src/assets/images/icon.' + iconExtension, // Never change this, its completly fucked up.
     frame: false,
     show: false,

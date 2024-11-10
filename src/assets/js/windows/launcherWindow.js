@@ -31,6 +31,7 @@ function createWindow() {
     width: 761,
     height: 824,
     resizable: false,
+    useContentSize: true,
     icon: './src/assets/images/icon.' + iconExtension,
     frame: false,
     show: false,

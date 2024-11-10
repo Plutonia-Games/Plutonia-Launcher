@@ -28,6 +28,7 @@ function createWindow() {
     icon: './src/assets/images/icon.' + iconExtension, // Never change this, its completly fucked up.
     show: false,
     resizable: false,
+    useContentSize: true,
     modal: true,
     webPreferences: {
       nodeIntegration: true,
