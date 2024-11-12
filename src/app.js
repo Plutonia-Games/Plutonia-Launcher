@@ -11,9 +11,6 @@ const fs = require("fs-extra");
 const UpdateWindow = require("./assets/js/windows/updateWindow.js");
 const MainWindow = require("./assets/js/windows/launcherWindow.js");
 
-const OptionWindow = require("./assets/js/windows/childs/optionWindow.js");
-const TfaWindow = require("./assets/js/windows/childs/tfaWindow.js");
-
 let isDev = process.env.NODE_ENV === "dev";
 
 if (isDev) {
