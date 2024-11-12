@@ -53,60 +53,14 @@ ipcMain.on("main-window-dev-tools-close", () =>
   MainWindow.getWindow().webContents.closeDevTools()
 );
 
-ipcMain.on("main-window-open", () => {
-  openMainWindow();
-});
-
-ipcMain.on("main-window-close", () => {
-  OptionWindow.destroyWindow();
-  TfaWindow.destroyWindow();
-
-  MainWindow.destroyWindow();
-});
+ipcMain.on("main-window-open", () => openMainWindow());
+ipcMain.on("main-window-close", () => MainWindow.destroyWindow());
 
 ipcMain.on("update-window-close", () => UpdateWindow.destroyWindow());
-
-ipcMain.handle("require-tfa", async (event, credentials) => {
-  const tfaWindow = TfaWindow.showWindow();
-
-  const code = await new Promise((resolve) => {
-    tfaWindow.on("closed", () => closeWindow());
-    tfaWindow.on("hide", () => closeWindow());
-
-    function closeWindow() {
-      ipcMain.removeListener("tfa-confirm", tfaConfirmListener);
-      resolve(null);
-    }
-
-    const tfaConfirmListener = (event, receivedCode) => {
-      resolve(receivedCode);
-      TfaWindow.hideWindow();
-    };
-
-    ipcMain.once("tfa-confirm", tfaConfirmListener);
-  });
-
-  if (!code || code.trim() === "") {
-    return { error: true, message: "Le code n'a pas été fourni." };
-  }
-
-  return { error: false, code: code };
-});
-
-ipcMain.on("show-options", () => {
-  OptionWindow.showWindow();
-});
-
-ipcMain.on("hide-options", () => OptionWindow.hideWindow());
 /* Listeners */
 
 /* Open the main window */
 function openMainWindow() {
-  UpdateWindow.destroyWindow();
-
-  OptionWindow.createWindow();
-  TfaWindow.createWindow();
-
   MainWindow.createWindow();
 }
 /* Open the main window */

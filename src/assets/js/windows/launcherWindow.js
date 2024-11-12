@@ -5,9 +5,12 @@
 
 "use strict";
 
-const { app, BrowserWindow, Menu } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
 const os = require("os");
+
+const OptionWindow = require("./childs/optionWindow.js");
+const TfaWindow = require("./childs/tfaWindow.js");
 
 let isDev = process.env.NODE_ENV === "dev";
 let mainWindow = undefined;
@@ -59,9 +62,54 @@ function createWindow() {
         mainWindow.webContents.openDevTools({ mode: "detach" });
       }
 
+      OptionWindow.createWindow();
+      TfaWindow.createWindow();
       mainWindow.show();
     }
   });
+
+  // Clean up and destroy any pre-loaded windows when the main window is closed.
+  mainWindow.on("close", () => {
+    TfaWindow.destroyWindow();
+    OptionWindow.destroyWindow();
+  });
 }
+
+/* TFA */
+ipcMain.handle("require-tfa", async (event, credentials) => {
+  const tfaWindow = TfaWindow.showWindow();
+
+  const code = await new Promise((resolve) => {
+    tfaWindow.on("closed", () => closeWindow());
+    tfaWindow.on("hide", () => closeWindow());
+
+    function closeWindow() {
+      ipcMain.removeListener("tfa-confirm", tfaConfirmListener);
+      resolve(null);
+    }
+
+    const tfaConfirmListener = (event, receivedCode) => {
+      resolve(receivedCode);
+      TfaWindow.hideWindow();
+    };
+
+    ipcMain.once("tfa-confirm", tfaConfirmListener);
+  });
+
+  if (!code || code.trim() === "") {
+    return { error: true, message: "Le code n'a pas été fourni." };
+  }
+
+  return { error: false, code: code };
+});
+/* TFA */
+
+/* Options */
+ipcMain.on("show-options", () => {
+  OptionWindow.showWindow();
+});
+
+ipcMain.on("hide-options", () => OptionWindow.hideWindow());
+/* Options */
 
 module.exports = { getWindow, createWindow, destroyWindow };

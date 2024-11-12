@@ -132,17 +132,8 @@ class JavaDownloader extends EventEmitter {
     try {
       this.emit("start-decompress");
 
-      try {
-        await fs.access(filePath, fs.constants.R_OK); // Lecture
-        await fs.access(destPath, fs.constants.W_OK); // Écriture
-      } catch (accessError) {
-        console.warn("Permissions insuffisantes, tentative de chmod...");
-
-        fs.chmodSync(filePath, 0o755);
-        fs.chmodSync(destPath, 0o755);
-      }
-
       await decompress(filePath, destPath);
+
       this.emit("finished-decompress");
     } catch (err) {
       console.error("Error during extraction:", err);
@@ -195,10 +186,14 @@ function reorganizeExtractedFiles(pathFolder) {
 
     if (fs.statSync(extractedFolder).isDirectory()) {
       fs.readdirSync(extractedFolder).forEach((item) => {
-        fs.renameSync(
-          path.join(extractedFolder, item),
-          path.join(pathFolder, item)
-        );
+        try {
+          fs.renameSync(
+            path.join(extractedFolder, item),
+            path.join(pathFolder, item)
+          );
+        } catch (error) {
+          console.error(`Failed to rename ${item}:`, error);
+        }
       });
 
       fs.rmdirSync(extractedFolder);
