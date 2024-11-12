@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-const os = require('os');
+const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
+const os = require("os");
 
 let tfaWindow = undefined;
 
 let forceClose = false;
-let isDev = process.env.NODE_ENV === 'dev';
+let isDev = process.env.NODE_ENV === "dev";
 
 function destroyWindow() {
   if (tfaWindow) {
@@ -21,13 +21,13 @@ function destroyWindow() {
 function createWindow() {
   destroyWindow();
 
-  const iconExtension = os.platform() === 'win32' ? 'ico' : 'png';
+  const iconExtension = os.platform() === "win32" ? "ico" : "png";
 
   tfaWindow = new BrowserWindow({
-    title: 'Double authentification',
+    title: "Double authentification",
     width: 275,
     height: 160,
-    icon: './src/assets/images/icon.' + iconExtension, // Never change this, its completly fucked up.
+    icon: "./src/assets/images/icon." + iconExtension, // Never change this, its completly fucked up.
     show: false,
     resizable: false,
     modal: true,
@@ -37,9 +37,9 @@ function createWindow() {
     },
   });
 
-  tfaWindow.loadFile(path.join(app.getAppPath() + '/src/tfa.html')); // Never change this, its completly fucked up.
+  tfaWindow.loadFile(path.join(app.getAppPath() + "/src/tfa.html")); // Never change this, its completly fucked up.
 
-  tfaWindow.on('close', (event) => {
+  tfaWindow.on("close", (event) => {
     if (!forceClose) {
       event.preventDefault();
     }
@@ -47,7 +47,7 @@ function createWindow() {
     hideWindow();
   });
 
-  tfaWindow.once('ready-to-show', () => {
+  tfaWindow.once("ready-to-show", () => {
     /* if (isDev) {
       tfaWindow.webContents.openDevTools({ mode: 'detach' });
     } */

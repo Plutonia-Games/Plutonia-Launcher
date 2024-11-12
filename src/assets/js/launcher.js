@@ -1,93 +1,95 @@
-'use strict';
+"use strict";
 
 /* Imports */
-const { ipcRenderer } = require('electron');
+const { ipcRenderer } = require("electron");
 
-const AuthWorker = require('./assets/js/workers/auth-worker.js');
+const AuthWorker = require("./assets/js/workers/auth-worker.js");
 const authWorker = new AuthWorker();
 
-const { JavaDownloader } = require('./assets/js/utils/java-downloader.js');
+const { JavaDownloader } = require("./assets/js/utils/java-downloader.js");
 const javaDownloader = new JavaDownloader();
 
 const {
   installLibrariesTask,
   installAssetsTask,
   installVersionTask,
-} = require('@xmcl/installer');
+} = require("@xmcl/installer");
 
-const { launch, Version } = require('@xmcl/core');
-const { request } = require('undici');
+const { launch, Version } = require("@xmcl/core");
+const { request } = require("undici");
 /* Imports */
 
 /* HTML Fields */
-const closeButton = document.querySelector('.close');
+const closeButton = document.querySelector(".close");
 
-const username = document.querySelector('.username input');
-const password = document.querySelector('.password input');
+const username = document.querySelector(".username input");
+const password = document.querySelector(".password input");
 
-const playButton = document.querySelector('.play');
-const settingsButton = document.querySelector('.settings');
+const playButton = document.querySelector(".play");
+const settingsButton = document.querySelector(".settings");
 
-const registerField = document.querySelector('.register');
+const registerField = document.querySelector(".register");
 
-const progressBar = document.querySelector('.progress');
-const progressBarText = document.querySelector('.progress-text');
+const progressBar = document.querySelector(".progress");
+const progressBarText = document.querySelector(".progress-text");
 /* HTML Fields */
 
 /* Registering listeners */
-window.addEventListener('load', async () => await loadCredentials());
+window.addEventListener("load", async () => await loadCredentials());
 
-closeButton.addEventListener('click', async (_) => ipcRenderer.send('main-window-close'));
+closeButton.addEventListener("click", async (_) =>
+  ipcRenderer.send("main-window-close")
+);
 
-settingsButton.addEventListener('click', async (_) => {
-  ipcRenderer.send('show-options');
+settingsButton.addEventListener("click", async (_) => {
+  ipcRenderer.send("show-options");
 });
 
-registerField.addEventListener('click', async (_) => {
+registerField.addEventListener("click", async (_) => {
   window.open(
-    'https://plutonia-mc.fr/user/register',
-    'RegisterWindow',
-    'width=700,height=600'
+    "https://plutonia-mc.fr/user/register",
+    "RegisterWindow",
+    "width=700,height=600"
   );
 });
 
 /* Open devTool console */
 let devTool = false;
 
-document.addEventListener('keydown', (e) => {
+document.addEventListener("keydown", (e) => {
   if (e.keyCode == 123) {
     ipcRenderer.send(
-      devTool ? 'main-window-dev-tools-close' : 'main-window-dev-tools'
+      devTool ? "main-window-dev-tools-close" : "main-window-dev-tools"
     );
     devTool = !devTool;
   }
 });
 /* Open devTool console */
 
-password.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
+password.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
     playButton.click();
   }
 });
 
-playButton.addEventListener('click', async (_) => {
+playButton.addEventListener("click", async (_) => {
   disableFields(true);
 
-  if (username.value === '' || password.value === '') {
-    setErrorMessage('Identifiants incorrects.');
+  if (username.value === "" || password.value === "") {
+    setErrorMessage("Identifiants incorrects.");
     return disableFields(false);
   }
 
   let authResult = undefined;
 
   try {
-    setMessage('Authentification en cours...');
+    setMessage("Authentification en cours...");
     authResult = await authWorker.auth(username.value, password.value);
 
     if (authResult.error) {
-      setErrorMessage('Veuillez entrer votre code 2FA.');
+      setErrorMessage("Veuillez entrer votre code 2FA.");
 
-      const tfaResult = await ipcRenderer.invoke('require-tfa', {
+      const tfaResult = await ipcRenderer.invoke("require-tfa", {
         username: username.value,
         password: password.value,
       });
@@ -109,7 +111,7 @@ playButton.addEventListener('click', async (_) => {
       }
     }
 
-    setMessage('Authentification réussie.');
+    setMessage("Authentification réussie.");
   } catch (error) {
     setErrorMessage(error.message);
     return disableFields(false);
@@ -120,10 +122,10 @@ playButton.addEventListener('click', async (_) => {
   let gamePath = undefined;
 
   try {
-    gamePath = await ipcRenderer.invoke('appData');
+    gamePath = await ipcRenderer.invoke("appData");
   } catch (error) {
-    console.error('Impossible de récupérer le chemin :', error);
-    setErrorMessage('Impossible de récupérer le chemin.');
+    console.error("Impossible de récupérer le chemin :", error);
+    setErrorMessage("Impossible de récupérer le chemin.");
     return disableFields(false);
   }
 
@@ -132,8 +134,8 @@ playButton.addEventListener('click', async (_) => {
   try {
     javaPath = await downloadJava(gamePath);
   } catch (error) {
-    console.log('Impossible de vérifier Java :', error);
-    setErrorMessage('Impossible de vérifier Java.');
+    console.log("Impossible de vérifier Java :", error);
+    setErrorMessage("Impossible de vérifier Java.");
     return disableFields(false);
   }
 
@@ -142,8 +144,8 @@ playButton.addEventListener('click', async (_) => {
   try {
     latestVersion = await downloadJar(gamePath);
   } catch (error) {
-    console.error('Impossible de récupérer la version :', error);
-    setErrorMessage('Impossible de récupérer la version...');
+    console.error("Impossible de récupérer la version :", error);
+    setErrorMessage("Impossible de récupérer la version...");
     return disableFields(false);
   }
 
@@ -153,7 +155,7 @@ playButton.addEventListener('click', async (_) => {
     await downloadLibrairies(resolvedVersion);
   } catch (error) {
     console.error(
-      'Erreur lors du téléchargement des librairies :',
+      "Erreur lors du téléchargement des librairies :",
       error.message
     );
     setErrorMessage("Une erreur s'est produite lors du téléchargement...");
@@ -180,7 +182,7 @@ playButton.addEventListener('click', async (_) => {
 /* Registering listeners */
 
 /* Workers */
-const VERSION_MANIFEST_URL = 'https://versions.plutonia.download/manifest.json';
+const VERSION_MANIFEST_URL = "https://versions.plutonia.download/manifest.json";
 
 async function getVersionList(options = {}) {
   const response = await request(VERSION_MANIFEST_URL, {
@@ -192,12 +194,12 @@ async function getVersionList(options = {}) {
 }
 
 async function downloadJava(gamePath) {
-  console.log('Vérification de Java...');
-  setMessage('Vérification de Java...');
+  console.log("Vérification de Java...");
+  setMessage("Vérification de Java...");
 
   setProgress(0);
 
-  javaDownloader.on('progress', (downloaded, size, fileName) => {
+  javaDownloader.on("progress", (downloaded, size, fileName) => {
     const percent = Math.round((downloaded / size) * 100);
 
     console.log(`Téléchargement de Java en cours... (${percent}%)`);
@@ -206,34 +208,34 @@ async function downloadJava(gamePath) {
     setProgress(percent);
   });
 
-  javaDownloader.on('finished-download', () => {
+  javaDownloader.on("finished-download", () => {
     console.log(`Téléchargement de Java terminé.`);
-    setMessage('Téléchargement de Java terminé.');
+    setMessage("Téléchargement de Java terminé.");
 
     setProgress(100);
   });
 
-  javaDownloader.on('start-decompress', () => {
+  javaDownloader.on("start-decompress", () => {
     console.log(`Décompression de Java en cours...`);
-    setMessage('Décompression de Java en cours...');
+    setMessage("Décompression de Java en cours...");
 
     setProgress(0);
   });
 
-  javaDownloader.on('finished-decompress', () => {
+  javaDownloader.on("finished-decompress", () => {
     console.log(`Décompression de Java terminé.`);
-    setMessage('Décompression de Java terminé.');
+    setMessage("Décompression de Java terminé.");
 
     setProgress(100);
   });
 
   const javaPath = await javaDownloader.getJava(
-    { path: gamePath, java: { type: 'jdk' } },
+    { path: gamePath, java: { type: "jdk" } },
     11
   );
 
   console.log(`Vérification de Java terminé.`);
-  setMessage('Vérification de Java terminé.');
+  setMessage("Vérification de Java terminé.");
 
   setProgress(100);
 
@@ -247,13 +249,13 @@ async function downloadJar(gamePath) {
   );
 
   if (!latestVersion) {
-    throw new Error('Impossible de récupérer la dernière version.');
+    throw new Error("Impossible de récupérer la dernière version.");
   }
 
   const installTask = installVersionTask(latestVersion, gamePath, {});
 
-  console.log('Vérification de la version...');
-  setMessage('Vérification de la version...');
+  console.log("Vérification de la version...");
+  setMessage("Vérification de la version...");
 
   setProgress(0);
 
@@ -270,8 +272,8 @@ async function downloadJar(gamePath) {
     },
   });
 
-  console.log('Vérification de la version terminé.');
-  setMessage('Vérification de la version terminé.');
+  console.log("Vérification de la version terminé.");
+  setMessage("Vérification de la version terminé.");
 
   setProgress(100);
 
@@ -281,8 +283,8 @@ async function downloadJar(gamePath) {
 async function downloadLibrairies(resolvedVersion) {
   const installTask = installLibrariesTask(resolvedVersion);
 
-  console.log('Vérification des librairies...');
-  setMessage('Vérification des librairies...');
+  console.log("Vérification des librairies...");
+  setMessage("Vérification des librairies...");
 
   await installTask.startAndWait({
     onUpdate(task, chunkSize) {
@@ -297,17 +299,17 @@ async function downloadLibrairies(resolvedVersion) {
     },
   });
 
-  console.log('Vérification des librairies terminé.');
-  setMessage('Vérification des librairies terminé.');
+  console.log("Vérification des librairies terminé.");
+  setMessage("Vérification des librairies terminé.");
 }
 
 async function downloadAssets(resolvedVersion) {
   const installTask = installAssetsTask(resolvedVersion, {
-    assetsHost: 'https://versions.plutonia.download/assets/objects',
+    assetsHost: "https://versions.plutonia.download/assets/objects",
   });
 
-  console.log('Vérification des assets...');
-  setMessage('Vérification des assets...');
+  console.log("Vérification des assets...");
+  setMessage("Vérification des assets...");
 
   setProgress(0);
 
@@ -324,21 +326,21 @@ async function downloadAssets(resolvedVersion) {
     },
   });
 
-  console.log('Vérification des assets terminé.');
-  setMessage('Vérification des assets terminé.');
+  console.log("Vérification des assets terminé.");
+  setMessage("Vérification des assets terminé.");
 
   setProgress(100);
 }
 
-const OPTIONS_FILE_NAME = 'options.json';
+const OPTIONS_FILE_NAME = "options.json";
 
 async function launchGame(args) {
-  console.log('Lancement du jeu...');
-  setMessage('Lancement du jeu...');
+  console.log("Lancement du jeu...");
+  setMessage("Lancement du jeu...");
 
   setProgress(0);
 
-  const options = await ipcRenderer.invoke('get-from-file', OPTIONS_FILE_NAME);
+  const options = await ipcRenderer.invoke("get-from-file", OPTIONS_FILE_NAME);
 
   const start = await launch({
     gamePath: args.gamePath,
@@ -349,15 +351,15 @@ async function launchGame(args) {
       name: args.authResult.name,
       id: args.authResult.uuid,
     },
-    userType: 'legacy',
+    userType: "legacy",
     extraExecOption: {
       detached: true,
     },
     extraJVMArgs: [
-      '-Xms128M',
-      `-Xmx${options && options.ram ? options.ram : '2048M'}`,
-      '-Dfml.ignoreInvalidMinecraftCertificates=true',
-      '-Dfml.ignorePatchDiscrepancies=true',
+      "-Xms128M",
+      `-Xmx${options && options.ram ? options.ram : "2048M"}`,
+      "-Dfml.ignoreInvalidMinecraftCertificates=true",
+      "-Dfml.ignorePatchDiscrepancies=true",
     ],
     extraMCArgs: [
       options &&
@@ -366,8 +368,8 @@ async function launchGame(args) {
         ? `-mods=${Object.entries(options.modules)
             .filter(([module, isActive]) => isActive)
             .map(([module]) => module)
-            .join(',')}`
-        : '',
+            .join(",")}`
+        : "",
     ],
   });
 
@@ -379,16 +381,16 @@ async function launchGame(args) {
   // console.info('Ligne de commande: ', start.spawnargs.join(' '));
 
   disableFields(false);
-  ipcRenderer.send('main-window-close');
+  ipcRenderer.send("main-window-close");
 }
 /* Workers */
 
-const CREDENTIALS_FILE_NAME = 'credentials.json';
+const CREDENTIALS_FILE_NAME = "credentials.json";
 
 /* Load Credentials from File */
 async function loadCredentials() {
   const credentials = await ipcRenderer.invoke(
-    'get-from-file',
+    "get-from-file",
     CREDENTIALS_FILE_NAME
   );
 
@@ -397,8 +399,8 @@ async function loadCredentials() {
   }
 
   if (credentials.password) {
-    password.value = Buffer.from(credentials.password, 'base64').toString(
-      'utf-8'
+    password.value = Buffer.from(credentials.password, "base64").toString(
+      "utf-8"
     );
   }
 }
@@ -407,10 +409,10 @@ async function loadCredentials() {
 function saveCredentials() {
   const datas = {
     username: username.value,
-    password: Buffer.from(password.value).toString('base64'),
+    password: Buffer.from(password.value).toString("base64"),
   };
 
-  ipcRenderer.send('save-to-file', CREDENTIALS_FILE_NAME, datas);
+  ipcRenderer.send("save-to-file", CREDENTIALS_FILE_NAME, datas);
 }
 /* Other functions */
 
@@ -419,7 +421,7 @@ function setProgress(percentage) {
   const maxWidth = 447;
   const progressBarWidth = (percentage / 100) * maxWidth;
 
-  progressBar.style.width = progressBarWidth + 'px';
+  progressBar.style.width = progressBarWidth + "px";
 }
 
 function disableFields(state) {
@@ -433,9 +435,9 @@ function disableFields(state) {
 
   elements.forEach((element) => {
     if (state) {
-      element.classList.add('disabled');
+      element.classList.add("disabled");
     } else {
-      element.classList.remove('disabled');
+      element.classList.remove("disabled");
     }
   });
 }
@@ -445,6 +447,6 @@ function setMessage(text) {
 }
 
 function setErrorMessage(text) {
-  setMessage("<span style='color: red;'>" + text + '</span>');
+  setMessage("<span style='color: red;'>" + text + "</span>");
 }
 /* Utils */

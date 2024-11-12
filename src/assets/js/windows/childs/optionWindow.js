@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-const os = require('os');
+const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
+const os = require("os");
 
 let optionsWindow = undefined;
 
 let forceClose = false;
-let isDev = process.env.NODE_ENV === 'dev';
+let isDev = process.env.NODE_ENV === "dev";
 
 function destroyWindow() {
   if (optionsWindow) {
@@ -21,13 +21,13 @@ function destroyWindow() {
 function createWindow() {
   destroyWindow();
 
-  const iconExtension = os.platform() === 'win32' ? 'ico' : 'png';
+  const iconExtension = os.platform() === "win32" ? "ico" : "png";
 
   optionsWindow = new BrowserWindow({
-    title: 'Plutonia - Options',
+    title: "Options",
     width: 275,
     height: 225,
-    icon: './src/assets/images/icon.' + iconExtension, // Never change this, its completly fucked up.
+    icon: "./src/assets/images/icon." + iconExtension, // Never change this, its completly fucked up.
     show: false,
     resizable: false,
     modal: true,
@@ -37,9 +37,9 @@ function createWindow() {
     },
   });
 
-  optionsWindow.loadFile(path.join(app.getAppPath() + '/src/options.html')); // Never change this, its completly fucked up.
+  optionsWindow.loadFile(path.join(app.getAppPath() + "/src/options.html")); // Never change this, its completly fucked up.
 
-  optionsWindow.on('close', (event) => {
+  optionsWindow.on("close", (event) => {
     if (!forceClose) {
       event.preventDefault();
     }
@@ -47,7 +47,7 @@ function createWindow() {
     hideWindow();
   });
 
-  optionsWindow.once('ready-to-show', () => {
+  optionsWindow.once("ready-to-show", () => {
     /* if (isDev) {
       optionsWindow.webContents.openDevTools({ mode: 'detach' });
     } */

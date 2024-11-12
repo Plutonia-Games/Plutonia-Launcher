@@ -3,11 +3,11 @@
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0/
  */
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const nodeFetch = require('node-fetch');
-const { EventEmitter } = require('events');
+const fs = require("fs");
+const nodeFetch = require("node-fetch");
+const { EventEmitter } = require("events");
 
 class Downloader extends EventEmitter {
   async downloadFile(url, path, fileName) {
@@ -19,23 +19,23 @@ class Downloader extends EventEmitter {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const size = response.headers.get('content-length');
+    const size = response.headers.get("content-length");
     let downloaded = 0;
 
     return new Promise((resolve, reject) => {
-      response.body.on('data', (chunk) => {
+      response.body.on("data", (chunk) => {
         downloaded += chunk.length;
-        this.emit('progress', downloaded, size);
+        this.emit("progress", downloaded, size);
         writer.write(chunk);
       });
 
-      response.body.on('end', () => {
+      response.body.on("end", () => {
         writer.end();
         resolve();
       });
 
-      response.body.on('error', (err) => {
-        this.emit('error', err);
+      response.body.on("error", (err) => {
+        this.emit("error", err);
         reject(err);
       });
     });
@@ -63,8 +63,8 @@ class Downloader extends EventEmitter {
       speeds.push(loaded / duration / 8); // Convert back to bytes per second
       const estimatedTime = (totalSize - downloaded) / speed;
 
-      this.emit('speed', speed);
-      this.emit('estimated', estimatedTime);
+      this.emit("speed", speed);
+      this.emit("estimated", estimatedTime);
       before = downloaded;
     }, 500);
 
@@ -73,7 +73,7 @@ class Downloader extends EventEmitter {
         const file = files[queued++];
         this.ensureDirectoryExists(file.folder);
         const writer = fs.createWriteStream(file.path, {
-          flags: 'w',
+          flags: "w",
           mode: 0o777,
         });
 
@@ -84,13 +84,13 @@ class Downloader extends EventEmitter {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
 
-          response.body.on('data', (chunk) => {
+          response.body.on("data", (chunk) => {
             downloaded += chunk.length;
-            this.emit('progress', downloaded, totalSize, file.type);
+            this.emit("progress", downloaded, totalSize, file.type);
             writer.write(chunk);
           });
 
-          response.body.on('end', () => {
+          response.body.on("end", () => {
             writer.end();
             completed++;
             downloadNext();
@@ -98,7 +98,7 @@ class Downloader extends EventEmitter {
         } catch (error) {
           writer.end();
           completed++;
-          this.emit('error', error);
+          this.emit("error", error);
           downloadNext();
         }
       }
@@ -120,15 +120,15 @@ class Downloader extends EventEmitter {
 
   async checkURL(url, timeout = 10000) {
     try {
-      const response = await nodeFetch(url, { method: 'HEAD', timeout });
+      const response = await nodeFetch(url, { method: "HEAD", timeout });
       if (response.status === 200) {
         return {
-          size: parseInt(response.headers.get('content-length')),
+          size: parseInt(response.headers.get("content-length")),
           status: response.status,
         };
       }
     } catch (error) {
-      this.emit('error', error);
+      this.emit("error", error);
       reject();
     }
 

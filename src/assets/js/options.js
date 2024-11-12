@@ -1,25 +1,25 @@
-'use strict';
+"use strict";
 
-const { ipcRenderer } = require('electron');
+const { ipcRenderer } = require("electron");
 
-const ramSelector = document.querySelector('#memory-select');
+const ramSelector = document.querySelector("#memory-select");
 
-const tabbyChat = document.querySelector('#enable-tabbychat');
-const simpleVoiceChat = document.querySelector('#enable-voice-chat');
+const tabbyChat = document.querySelector("#enable-tabbychat");
+const simpleVoiceChat = document.querySelector("#enable-voice-chat");
 
-const confirmButton = document.querySelector('.confirm-button');
+const confirmButton = document.querySelector(".confirm-button");
 
 /* Listeners */
-confirmButton.addEventListener('click', () => saveOptions());
+confirmButton.addEventListener("click", () => saveOptions());
 
-window.addEventListener('load', async () => loadOptions());
+window.addEventListener("load", async () => loadOptions());
 /* Listeners */
 
-const OPTIONS_FILE_NAME = 'options.json';
+const OPTIONS_FILE_NAME = "options.json";
 
 /* Load Options from File */
 async function loadOptions() {
-  const options = await ipcRenderer.invoke('get-from-file', OPTIONS_FILE_NAME);
+  const options = await ipcRenderer.invoke("get-from-file", OPTIONS_FILE_NAME);
 
   if (options) {
     ramSelector.value = options.ram;
@@ -41,6 +41,6 @@ function saveOptions() {
     },
   };
 
-  ipcRenderer.send('save-to-file', OPTIONS_FILE_NAME, datas);
-  ipcRenderer.send('hide-options');
+  ipcRenderer.send("save-to-file", OPTIONS_FILE_NAME, datas);
+  ipcRenderer.send("hide-options");
 }

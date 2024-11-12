@@ -1,11 +1,11 @@
-@import 'font.css';
+@import "font.css";
 
 body {
   width: 400px;
   height: 500px;
   -webkit-app-region: drag;
   background-color: #161616;
-  font-family: 'LemonMilk-Pro', sans-serif;
+  font-family: "LemonMilk-Pro", sans-serif;
   letter-spacing: 1.5px;
   -webkit-user-drag: none;
   user-select: none;

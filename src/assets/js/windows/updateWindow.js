@@ -3,13 +3,13 @@
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
-'use strict';
+"use strict";
 
-const { app, BrowserWindow, Menu } = require('electron');
-const path = require('path');
-const os = require('os');
+const { app, BrowserWindow, Menu } = require("electron");
+const path = require("path");
+const os = require("os");
 
-let isDev = process.env.NODE_ENV === 'dev';
+let isDev = process.env.NODE_ENV === "dev";
 let updateWindow = undefined;
 
 function getWindow() {
@@ -26,15 +26,15 @@ function destroyWindow() {
 function createWindow() {
   destroyWindow();
 
-  const iconExtension = os.platform() === 'win32' ? 'ico' : 'png';
+  const iconExtension = os.platform() === "win32" ? "ico" : "png";
 
   updateWindow = new BrowserWindow({
-    title: 'Plutonia - Mise à jour',
+    title: "Plutonia - Mise à jour",
     width: 400,
     height: 500,
     resizable: false,
     useContentSize: true,
-    icon: './src/assets/images/icon.' + iconExtension, // Never change this, its completly fucked up.
+    icon: "./src/assets/images/icon." + iconExtension, // Never change this, its completly fucked up.
     frame: false,
     show: false,
     transparent: true,
@@ -47,15 +47,15 @@ function createWindow() {
   Menu.setApplicationMenu(null);
 
   updateWindow.setMenuBarVisibility(false);
-  
+
   updateWindow.setBounds({ x: 0, y: 0, width: 400, height: 500 });
   updateWindow.center();
 
-  updateWindow.loadFile(path.join(app.getAppPath() + '/src/updater.html')); // Never change this, its completly fucked up.
+  updateWindow.loadFile(path.join(app.getAppPath() + "/src/updater.html")); // Never change this, its completly fucked up.
 
-  updateWindow.once('ready-to-show', () => {
+  updateWindow.once("ready-to-show", () => {
     if (isDev) {
-      updateWindow.webContents.openDevTools({ mode: 'detach' });
+      updateWindow.webContents.openDevTools({ mode: "detach" });
     }
 
     updateWindow.show();
