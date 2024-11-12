@@ -90,8 +90,6 @@ playButton.addEventListener('click', async (_) => {
         password: password.value,
       });
 
-      console.log(tfaResult);
-
       if (tfaResult.message) {
         setErrorMessage(tfaResult.message);
         return disableFields(false);
