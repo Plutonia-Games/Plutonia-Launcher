@@ -1,3 +1,5 @@
+'use strict';
+
 const { ipcRenderer } = require('electron');
 
 const codeInput = document.querySelector('#code-input');

@@ -1,3 +1,5 @@
+'use strict';
+
 const url = 'https://api.plutonia-mc.fr/auth';
 
 class AuthWorker {

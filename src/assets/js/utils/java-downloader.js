@@ -1,13 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+"use strict";
 
-const crypto = require('crypto');
-const decompress = require('decompress');
-const nodeFetch = require('node-fetch');
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
 
-const EventEmitter = require('events');
-const Downloader = require('./downloader.js');
+const crypto = require("crypto");
+const decompress = require("decompress");
+const nodeFetch = require("node-fetch");
+
+const EventEmitter = require("events");
+const Downloader = require("./downloader.js");
 
 class JavaDownloader extends EventEmitter {
   /**
@@ -17,7 +19,7 @@ class JavaDownloader extends EventEmitter {
    * @returns {Object} - Contient le chemin vers Java ou une erreur.
    */
   async getJava(options, versionDownload = 8) {
-    this.emit('started');
+    this.emit("started");
 
     const javaVersionURL = `https://api.adoptium.net/v3/assets/latest/${versionDownload}/hotspot`;
     const javaVersions = await fetchJavaVersions(javaVersionURL);
@@ -26,7 +28,7 @@ class JavaDownloader extends EventEmitter {
     const java = findJavaVersion(javaVersions, options, platform, arch);
 
     if (!java) {
-      throw new Error('No Java found');
+      throw new Error("No Java found");
     }
 
     const { checksum, link: url, name: fileName } = java.binary.package;
@@ -52,12 +54,12 @@ class JavaDownloader extends EventEmitter {
       });
       await reorganizeExtractedFiles(pathFolder);
 
-      if (platform !== 'windows') {
+      if (platform !== "windows") {
         fs.chmodSync(javaPath, 0o755);
       }
     }
 
-    this.emit('finished');
+    this.emit("finished");
     return { files: [], path: javaPath };
   }
 
@@ -103,23 +105,23 @@ class JavaDownloader extends EventEmitter {
     }
 
     if (!fs.existsSync(filePath)) {
-      this.emit('start-download', url);
+      this.emit("start-download", url);
 
       fs.mkdirSync(pathFolder, { recursive: true });
       const download = new Downloader();
 
-      download.on('progress', (downloaded, size) => {
-        this.emit('progress', downloaded, size, fileName);
+      download.on("progress", (downloaded, size) => {
+        this.emit("progress", downloaded, size, fileName);
       });
 
       await download.downloadFile(url, pathFolder, fileName);
-      this.emit('finished-download');
+      this.emit("finished-download");
     }
 
     const downloadedChecksum = await getFileHash(filePath);
 
     if (downloadedChecksum !== checksum) {
-      throw new Error('Java checksum verification failed');
+      throw new Error("Java checksum verification failed");
     }
   }
 
@@ -128,11 +130,22 @@ class JavaDownloader extends EventEmitter {
    */
   async extract(filePath, destPath) {
     try {
-      this.emit('start-decompress');
+      this.emit("start-decompress");
+
+      try {
+        await fs.access(filePath, fs.constants.R_OK); // Lecture
+        await fs.access(destPath, fs.constants.W_OK); // Écriture
+      } catch (accessError) {
+        console.warn("Permissions insuffisantes, tentative de chmod...");
+
+        fs.chmodSync(filePath, 0o755);
+        fs.chmodSync(destPath, 0o755);
+      }
+
       await decompress(filePath, destPath);
-      this.emit('finished-decompress');
+      this.emit("finished-decompress");
     } catch (err) {
-      console.error('Error during extraction:', err);
+      console.error("Error during extraction:", err);
       throw err;
     }
   }
@@ -162,12 +175,12 @@ function findJavaVersion(javaVersions, options, platform, arch) {
  * Retourne le chemin vers l'exécutable Java en fonction de la plateforme.
  */
 function getJavaExecutablePath(platform, pathFolder) {
-  if (platform === 'mac') {
-    return path.join(pathFolder, 'Contents', 'Home', 'bin', 'java');
-  } else if (platform === 'windows') {
-    return path.join(pathFolder, 'bin', 'java.exe');
+  if (platform === "mac") {
+    return path.join(pathFolder, "Contents", "Home", "bin", "java");
+  } else if (platform === "windows") {
+    return path.join(pathFolder, "bin", "java.exe");
   } else {
-    return path.join(pathFolder, 'bin', 'java');
+    return path.join(pathFolder, "bin", "java");
   }
 }
 
@@ -197,14 +210,14 @@ function reorganizeExtractedFiles(pathFolder) {
  * Récupère la plateforme et l'architecture courante.
  */
 function getPlatformArch() {
-  const platformMap = { win32: 'windows', darwin: 'mac', linux: 'linux' };
-  const archMap = { x64: 'x64', ia32: 'x32', arm64: 'aarch64', arm: 'arm' };
+  const platformMap = { win32: "windows", darwin: "mac", linux: "linux" };
+  const archMap = { x64: "x64", ia32: "x32", arm64: "aarch64", arm: "arm" };
 
   const platform = platformMap[os.platform()] || os.platform();
   let arch = archMap[os.arch()] || os.arch();
 
-  if (os.platform() === 'darwin' && os.arch() === 'arm64') {
-    arch = 'x64';
+  if (os.platform() === "darwin" && os.arch() === "arm64") {
+    arch = "x64";
   }
 
   return { platform, arch };
@@ -213,13 +226,13 @@ function getPlatformArch() {
 /**
  * Calcule le hash d'un fichier.
  */
-async function getFileHash(filePath, algorithm = 'sha256') {
+async function getFileHash(filePath, algorithm = "sha256") {
   const shasum = crypto.createHash(algorithm);
   const file = fs.createReadStream(filePath);
 
   return new Promise((resolve) => {
-    file.on('data', (data) => shasum.update(data));
-    file.on('end', () => resolve(shasum.digest('hex')));
+    file.on("data", (data) => shasum.update(data));
+    file.on("end", () => resolve(shasum.digest("hex")));
   });
 }
 

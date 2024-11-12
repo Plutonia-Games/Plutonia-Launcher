@@ -3,6 +3,8 @@
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0/
  */
 
+'use strict';
+
 const fs = require('fs');
 const nodeFetch = require('node-fetch');
 const { EventEmitter } = require('events');
