@@ -237,7 +237,7 @@ async function downloadJava(gamePath) {
 
   const javaPath = await javaDownloader.getJava(
     { path: gamePath, java: { type: "jdk" } },
-    11
+    8
   );
 
   console.log(`Vérification de Java terminé.`);
