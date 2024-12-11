@@ -51,7 +51,7 @@ function createWindow() {
   updateWindow.setBounds({ x: 0, y: 0, width: 400, height: 500 });
   updateWindow.center();
 
-  updateWindow.loadFile(path.join(app.getAppPath() + "/src/updater.html")); // Never change this, its completly fucked up.
+  updateWindow.loadFile(path.join(`${app.getAppPath()}/src/updater.html`)); // Never change this, its completly fucked up.
 
   updateWindow.once("ready-to-show", () => {
     if (isDev) {

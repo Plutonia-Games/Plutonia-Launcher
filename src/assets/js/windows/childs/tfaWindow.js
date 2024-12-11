@@ -37,7 +37,7 @@ function createWindow() {
     },
   });
 
-  tfaWindow.loadFile(path.join(app.getAppPath() + "/src/tfa.html")); // Never change this, its completly fucked up.
+  tfaWindow.loadFile(path.join(`${app.getAppPath()}/src/tfa.html`)); // Never change this, its completly fucked up.
 
   tfaWindow.on("close", (event) => {
     if (!forceClose) {
