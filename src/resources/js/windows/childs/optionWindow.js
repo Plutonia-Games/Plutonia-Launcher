@@ -27,7 +27,7 @@ function createWindow() {
     title: "Options",
     width: 275,
     height: 225,
-    icon: "./src/assets/images/icon." + iconExtension, // Never change this, its completly fucked up.
+    icon: "./src/resources/images/icons/icon." + iconExtension, // Never change this, its completly fucked up.
     show: false,
     resizable: false,
     modal: true,
@@ -37,7 +37,9 @@ function createWindow() {
     },
   });
 
-  optionsWindow.loadFile(path.join(app.getAppPath() + "/src/options.html")); // Never change this, its completly fucked up.
+  optionsWindow.loadFile(
+    path.join(app.getAppPath() + "/src/frames/options.html")
+  ); // Never change this, its completly fucked up.
 
   optionsWindow.on("close", (event) => {
     if (!forceClose) {

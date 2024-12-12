@@ -37,7 +37,7 @@ function createWindow() {
     height: 824,
     resizable: false,
     useContentSize: true,
-    icon: "./src/assets/images/icon." + iconExtension,
+    icon: "./src/resources/images/icons/icon." + iconExtension,
     frame: false,
     show: false,
     transparent: true,
@@ -54,7 +54,9 @@ function createWindow() {
   mainWindow.setBounds({ x: 0, y: 0, width: 761, height: 824 });
   mainWindow.center();
 
-  mainWindow.loadFile(path.join(`${app.getAppPath()}/src/launcher.html`));
+  mainWindow.loadFile(
+    path.join(`${app.getAppPath()}/src/frames/launcher.html`)
+  );
 
   mainWindow.once("ready-to-show", () => {
     if (mainWindow) {

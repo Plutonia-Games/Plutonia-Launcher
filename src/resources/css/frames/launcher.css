@@ -1,10 +1,10 @@
-@import url("./font.css");
+@import url("../font.css");
 /* Style de la page principale */
 body {
   font-family: "LemonMilk-Pro", sans-serif;
   width: 761px;
   height: 824px;
-  background-image: url("../images/background.png");
+  background-image: url("../../images/background.png");
   background-size: cover;
   margin: 0;
   display: flex;
@@ -23,7 +23,7 @@ body {
   width: 449px;
   height: 28px;
   /* Image de fond */
-  background-image: url("../images/elements/progressbar/progressbar.png");
+  background-image: url("../../images/elements/bar/empty.png");
   background-size: cover;
 }
 
@@ -49,7 +49,7 @@ body {
   width: 0px;
   height: 28px;
   /* Image de fond */
-  background-image: url("../images/elements/progressbar/progressbar_full.png");
+  background-image: url("../../images/elements/bar/full.png");
 }
 
 /* Style du texte */
@@ -83,7 +83,7 @@ body {
   width: 51px;
   height: 54px;
   cursor: pointer;
-  background-image: url("../images/elements/btn/btn_quit.png");
+  background-image: url("../../images/elements/buttons/quit.png");
   background-position: 0 0;
 }
 
@@ -99,7 +99,7 @@ body {
   width: 260px;
   height: 60px;
   cursor: pointer;
-  background-image: url("../images/elements/btn/btn_play.png");
+  background-image: url("../../images/elements/buttons/play.png");
   background-position: 0 0px;
 }
 
@@ -120,7 +120,7 @@ body {
   width: 50px;
   height: 50px;
   cursor: pointer;
-  background-image: url("../images/elements/btn/btn_settings.png");
+  background-image: url("../../images/elements/buttons/settings.png");
   background-position: 0 0px;
 }
 
@@ -139,7 +139,7 @@ body {
   position: absolute;
   width: 417px;
   height: 72px;
-  background-image: url("../images/elements/field/field_empty.png");
+  background-image: url("../../images/elements/text_field.png");
 }
 
 .username input,

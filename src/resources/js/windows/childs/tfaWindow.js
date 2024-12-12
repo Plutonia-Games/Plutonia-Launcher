@@ -27,7 +27,7 @@ function createWindow() {
     title: "Double authentification",
     width: 275,
     height: 160,
-    icon: "./src/assets/images/icon." + iconExtension, // Never change this, its completly fucked up.
+    icon: "./src/resources/images/icons/icon." + iconExtension, // Never change this, its completly fucked up.
     show: false,
     resizable: false,
     modal: true,
@@ -37,7 +37,7 @@ function createWindow() {
     },
   });
 
-  tfaWindow.loadFile(path.join(`${app.getAppPath()}/src/tfa.html`)); // Never change this, its completly fucked up.
+  tfaWindow.loadFile(path.join(`${app.getAppPath()}/src/frames/tfa.html`)); // Never change this, its completly fucked up.
 
   tfaWindow.on("close", (event) => {
     if (!forceClose) {

@@ -34,7 +34,7 @@ function createWindow() {
     height: 500,
     resizable: false,
     useContentSize: true,
-    icon: "./src/assets/images/icon." + iconExtension, // Never change this, its completly fucked up.
+    icon: "./src/resources/images/icons/icon." + iconExtension, // Never change this, its completly fucked up.
     frame: false,
     show: false,
     transparent: true,
@@ -51,7 +51,9 @@ function createWindow() {
   updateWindow.setBounds({ x: 0, y: 0, width: 400, height: 500 });
   updateWindow.center();
 
-  updateWindow.loadFile(path.join(`${app.getAppPath()}/src/updater.html`)); // Never change this, its completly fucked up.
+  updateWindow.loadFile(
+    path.join(`${app.getAppPath()}/src/frames/updater.html`)
+  ); // Never change this, its completly fucked up.
 
   updateWindow.once("ready-to-show", () => {
     if (isDev) {

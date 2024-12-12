@@ -6,11 +6,11 @@ const { ipcRenderer } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
-const AuthWorker = require("./assets/js/workers/auth-worker.js");
+const AuthWorker = require("../resources/js/workers/auth-worker.js");
 const authWorker = new AuthWorker();
 
-const { JavaDownloader } = require("./assets/js/utils/java-downloader.js");
-const javaDownloader = new JavaDownloader();
+const { JavaWorker } = require("../resources/js/workers/java-worker.js");
+const javaWorker = new JavaWorker();
 
 const {
   installLibrariesTask,
@@ -205,7 +205,7 @@ async function downloadJava(gamePath) {
 
   setProgress(0);
 
-  javaDownloader.on("progress", (downloaded, size, fileName) => {
+  javaWorker.on("progress", (downloaded, size, fileName) => {
     const percent = Math.round((downloaded / size) * 100);
 
     console.log(`Téléchargement de Java en cours... (${percent}%)`);
@@ -214,33 +214,33 @@ async function downloadJava(gamePath) {
     setProgress(percent);
   });
 
-  javaDownloader.on("finished-download", () => {
+  javaWorker.on("finished-download", () => {
     console.log(`Téléchargement de Java terminé.`);
     setMessage("Téléchargement de Java terminé.");
 
     setProgress(100);
   });
 
-  javaDownloader.on("start-decompress", () => {
+  javaWorker.on("start-decompress", () => {
     console.log(`Décompression de Java en cours...`);
     setMessage("Décompression de Java en cours...");
 
     setProgress(0);
   });
 
-  javaDownloader.on("finished-decompress", () => {
+  javaWorker.on("finished-decompress", () => {
     console.log(`Décompression de Java terminé.`);
     setMessage("Décompression de Java terminé.");
 
     setProgress(100);
   });
 
-  const javaPath = await javaDownloader.getJava(
+  const javaPath = await javaWorker.getJava(
     { path: gamePath, java: { type: "jdk" } },
     8
   );
 
-  console.log(`Vérification de Java terminé.`);
+  console.log("Vérification de Java terminé.");
   setMessage("Vérification de Java terminé.");
 
   setProgress(100);

@@ -9,9 +9,9 @@ const decompress = require("decompress");
 const nodeFetch = require("node-fetch");
 
 const EventEmitter = require("events");
-const Downloader = require("./downloader.js");
+const Downloader = require("../downloader.js");
 
-class JavaDownloader extends EventEmitter {
+class JavaWorker extends EventEmitter {
   /**
    * Télécharge et configure Java en fonction de la plateforme et de l'architecture de l'utilisateur.
    * @param {Object} options - Options de téléchargement et de configuration.
@@ -231,4 +231,4 @@ async function getFileHash(filePath, algorithm = "sha256") {
   });
 }
 
-module.exports = { JavaDownloader };
+module.exports = { JavaWorker };
