@@ -5,7 +5,7 @@ const { ipcRenderer } = require("electron");
 const ramSelector = document.querySelector("#memory-select");
 
 const tabbyChat = document.querySelector("#enable-tabbychat");
-const simpleVoiceChat = document.querySelector("#enable-voice-chat");
+const preRelease = document.querySelector("#enable-prerelease");
 
 const confirmButton = document.querySelector(".confirm-button");
 
@@ -23,10 +23,10 @@ async function loadOptions() {
 
   if (options) {
     ramSelector.value = options.ram;
+    preRelease.checked = options.prerelease;
 
     if (options.modules) {
       tabbyChat.checked = options.modules.tabbychat;
-      simpleVoiceChat.checked = options.modules.svc;
     }
   }
 }
@@ -35,9 +35,10 @@ async function loadOptions() {
 function saveOptions() {
   const datas = {
     ram: ramSelector.value,
+    prerelease: preRelease.checked,
+
     modules: {
       tabbychat: tabbyChat.checked,
-      svc: simpleVoiceChat.checked,
     },
   };
 

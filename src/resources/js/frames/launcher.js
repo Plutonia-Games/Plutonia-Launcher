@@ -78,6 +78,8 @@ password.addEventListener("keydown", (event) => {
   }
 });
 
+const OPTIONS_FILE_NAME = "options.json";
+
 playButton.addEventListener("click", async (_) => {
   disableFields(true);
 
@@ -146,9 +148,10 @@ playButton.addEventListener("click", async (_) => {
   }
 
   let latestVersion = undefined;
+  const options = await ipcRenderer.invoke("get-from-file", OPTIONS_FILE_NAME);
 
   try {
-    latestVersion = await downloadJar(gamePath);
+    latestVersion = await downloadJar(gamePath, options.prerelease);
   } catch (error) {
     console.error("Impossible de récupérer la version :", error);
     setErrorMessage("Impossible de récupérer la version...");
@@ -178,12 +181,15 @@ playButton.addEventListener("click", async (_) => {
     return disableFields(false);
   }
 
-  await launchGame({
-    gamePath: gamePath,
-    version: latestVersion.id,
-    javaPath: javaPath.path,
-    authResult: authResult,
-  });
+  await launchGame(
+    {
+      gamePath: gamePath,
+      version: latestVersion.id,
+      javaPath: javaPath.path,
+      authResult: authResult,
+    },
+    options
+  );
 });
 /* Registering listeners */
 
@@ -248,11 +254,15 @@ async function downloadJava(gamePath) {
   return javaPath;
 }
 
-async function downloadJar(gamePath) {
+async function downloadJar(gamePath, prerelease) {
   const version = await getVersionList();
-  const latestVersion = version.versions.find(
-    (v) => v.id === version.latest.release
-  );
+
+  const latestVersion = version.versions.find((v) => {
+    const targetId = prerelease
+      ? version.latest.prerelease
+      : version.latest.release;
+    return v.id === targetId;
+  });
 
   if (!latestVersion) {
     throw new Error("Impossible de récupérer la dernière version.");
@@ -338,15 +348,11 @@ async function downloadAssets(resolvedVersion) {
   setProgress(100);
 }
 
-const OPTIONS_FILE_NAME = "options.json";
-
-async function launchGame(args) {
+async function launchGame(args, options) {
   console.log("Lancement du jeu...");
   setMessage("Lancement du jeu...");
 
   setProgress(0);
-
-  const options = await ipcRenderer.invoke("get-from-file", OPTIONS_FILE_NAME);
 
   const start = await launch({
     gamePath: args.gamePath,
