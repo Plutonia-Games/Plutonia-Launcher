@@ -8,8 +8,8 @@ const os = require("os");
 const path = require("path");
 const fs = require("fs-extra");
 
-const UpdateWindow = require("./assets/js/windows/updateWindow.js");
-const MainWindow = require("./assets/js/windows/launcherWindow.js");
+const UpdateWindow = require("./resources/js/windows/updateWindow.js");
+const MainWindow = require("./resources/js/windows/launcherWindow.js");
 
 let isDev = process.env.NODE_ENV === "dev";
 
