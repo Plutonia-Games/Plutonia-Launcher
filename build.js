@@ -1,65 +1,65 @@
-const fs = require('fs-extra');
-const builder = require('electron-builder');
-const JavaScriptObfuscator = require('javascript-obfuscator');
-const nodeFetch = require('node-fetch');
-const png2icons = require('png2icons');
-const { Jimp, JimpMime } = require('jimp');
+const fs = require("fs-extra");
+const builder = require("electron-builder");
+const JavaScriptObfuscator = require("javascript-obfuscator");
+const nodeFetch = require("node-fetch");
+const png2icons = require("png2icons");
+const { Jimp, JimpMime } = require("jimp");
 
-const { preductname } = require('./package.json');
+const { preductname } = require("./package.json");
 
 class Index {
   async init() {
     this.obf = true;
     this.Fileslist = [];
     process.argv.forEach(async (val) => {
-      if (val.startsWith('--icon')) {
-        return this.iconSet(val.split('=')[1]);
+      if (val.startsWith("--icon")) {
+        return this.iconSet(val.split("=")[1]);
       }
 
-      if (val.startsWith('--obf')) {
-        this.obf = JSON.parse(val.split('=')[1]);
-        this.Fileslist = this.getFiles('src');
+      if (val.startsWith("--obf")) {
+        this.obf = JSON.parse(val.split("=")[1]);
+        this.Fileslist = this.getFiles("src");
       }
 
-      if (val.startsWith('--build')) {
-        let buildType = val.split('=')[1];
-        if (buildType == 'platform') return await this.buildPlatform();
+      if (val.startsWith("--build")) {
+        let buildType = val.split("=")[1];
+        if (buildType == "platform") return await this.buildPlatform();
       }
     });
   }
 
   async Obfuscate() {
-    if (fs.existsSync('./app')) fs.rmSync('./app', { recursive: true });
+    if (fs.existsSync("./app")) fs.rmSync("./app", { recursive: true });
 
     for (let path of this.Fileslist) {
-      let fileName = path.split('/').pop();
-      let extFile = fileName.split('.').pop();
-      let folder = path.replace(`/${fileName}`, '').replace('src', 'app');
+      let fileName = path.split("/").pop();
+      let extFile = fileName.split(".").pop();
+      let folder = path.replace(`/${fileName}`, "").replace("src", "app");
 
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
 
-      if (extFile == 'js') {
-        let code = fs.readFileSync(path, 'utf8');
-        code = code.replace(/src\//g, 'app/');
+      if (extFile == "js") {
+        let code = fs.readFileSync(path, "utf8");
+        code = code.replace(/src\//g, "app/");
         if (this.obf) {
           await new Promise((resolve) => {
             console.log(`Obfuscate ${path}`);
             let obf = JavaScriptObfuscator.obfuscate(code, {
-              optionsPreset: 'medium-obfuscation',
+              optionsPreset: "medium-obfuscation",
               disableConsoleOutput: false,
             });
             resolve(
               fs.writeFileSync(
                 `${folder}/${fileName}`,
                 obf.getObfuscatedCode(),
-                { encoding: 'utf-8' }
+                { encoding: "utf-8" }
               )
             );
           });
         } else {
           console.log(`Copy ${path}`);
           fs.writeFileSync(`${folder}/${fileName}`, code, {
-            encoding: 'utf-8',
+            encoding: "utf-8",
           });
         }
       } else {
@@ -76,25 +76,25 @@ class Index {
           generateUpdatesFilesForAllChannels: false,
           appId: preductname,
           productName: preductname,
-          copyright: 'Copyright © 2014-2024 Plutonia',
-          artifactName: '${productName}-${os}-${arch}.${ext}',
-          extraMetadata: { main: 'app/app.js' },
-          files: ['app/**/*', 'package.json', 'LICENSE.md'],
-          directories: { output: 'dist' },
-          compression: 'maximum',
+          copyright: "Copyright © 2014-2024 Plutonia",
+          artifactName: "${productName}-${os}-${arch}.${ext}",
+          extraMetadata: { main: "app/app.js" },
+          files: ["app/**/*", "package.json", "LICENSE.md"],
+          directories: { output: "dist" },
+          compression: "maximum",
           asar: true,
           publish: [
             {
-              provider: 'github',
-              releaseType: 'release',
+              provider: "github",
+              releaseType: "release",
             },
           ],
           win: {
-            icon: './app/assets/images/icon.ico',
+            icon: "./app/resources/images/icons/icon.ico",
             target: [
               {
-                target: 'nsis',
-                arch: 'x64',
+                target: "nsis",
+                arch: "x64",
               },
             ],
           },
@@ -105,36 +105,36 @@ class Index {
             runAfterFinish: true,
           },
           mac: {
-            icon: './app/assets/images/icon.icns',
-            category: 'public.app-category.games',
+            icon: "./app/resources/images/icons/icon.icns",
+            category: "public.app-category.games",
             identity: null,
             target: [
               {
-                target: 'dmg',
-                arch: 'universal',
+                target: "dmg",
+                arch: "universal",
               },
               {
-                target: 'zip',
-                arch: 'universal',
+                target: "zip",
+                arch: "universal",
               },
             ],
           },
           linux: {
-            icon: './app/assets/images/icon.png',
+            icon: "./app/resources/images/icons/icon.png",
             target: [
               {
-                target: 'AppImage',
-                arch: 'x64',
+                target: "AppImage",
+                arch: "x64",
               },
             ],
           },
         },
       })
       .then(() => {
-        console.log('Build finished!');
+        console.log("Build finished!");
       })
       .catch((err) => {
-        console.error('Error during build!', err);
+        console.error("Error during build!", err);
       });
   }
 
@@ -158,8 +158,8 @@ class Index {
       Buffer = await Buffer.buffer();
       const image = await Jimp.read(Buffer);
 
-      if (!fs.existsSync('src/assets/images')) {
-        fs.mkdirSync('src/assets/images', { recursive: true });
+      if (!fs.existsSync("src/resources/images/icons")) {
+        fs.mkdirSync("src/resources/images/icons", { recursive: true });
       }
 
       Buffer = await image
@@ -168,7 +168,7 @@ class Index {
         .getBuffer(JimpMime.png);
 
       fs.writeFileSync(
-        'src/assets/images/icon.icns',
+        "src/assets/images/icons/icon.icns",
         png2icons.createICNS(Buffer, png2icons.BILINEAR, 0)
       );
 
@@ -178,10 +178,10 @@ class Index {
         png2icons.createICO(Buffer, png2icons.BILINEAR, 0, true)
       ); */
 
-      fs.writeFileSync('src/assets/images/icon.png', Buffer);
-      console.log('New icon set!');
+      fs.writeFileSync("src/resources/images/icons/icon.png", Buffer);
+      console.log("New icon set!");
     } else {
-      console.log('Connection error!');
+      console.log("Connection error!");
     }
   }
 }
