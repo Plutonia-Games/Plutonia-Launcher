@@ -83,13 +83,6 @@ class Index {
           directories: { output: "dist" },
           compression: "maximum",
           asar: true,
-          publish: [
-            {
-              provider: "github",
-              releaseType: "release",
-              publish: "never",
-            },
-          ],
           win: {
             icon: "./app/resources/images/icons/icon.ico",
             target: [
