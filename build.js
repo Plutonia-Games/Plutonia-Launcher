@@ -132,10 +132,10 @@ class Index {
         },
       })
       .then(() => {
-        console.log("Build finished!");
+        console.log("Build finished !");
       })
       .catch((err) => {
-        console.error("Error during build!", err);
+        console.error("Error during build: ", err);
       });
   }
 

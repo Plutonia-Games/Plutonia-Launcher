@@ -61,3 +61,20 @@ jobs:
           GH_TOKEN: ${{ secrets.github_token }}
         run: npm run build
         shell: bash
+
+      - name: Sign with EV cert on Azure (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          dotnet tool install --global AzureSignTool
+          AzureSignTool sign -kvu "${{ secrets.AZURE_KEY_VAULT_URI }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" --azure-key-vault-tenant-id "${{ secrets.AZURE_TENANT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc ${{ secrets.AZURE_CERT_NAME }} -tr http://timestamp.globalsign.com/tsa/advanced -td sha256 "dist/Plutonia-win-x64.exe"
+          mv dist/Plutonia-win-x64.exe dist/Plutonia-win-x64-signed.exe
+
+      - name: Upload signed executable to release
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/Plutonia-win-x64-signed.exe
+          asset_name: Plutonia-win-x64-signed.exe
+          asset_content_type: application/octet-stream
