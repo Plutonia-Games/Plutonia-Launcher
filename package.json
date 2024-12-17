@@ -1,6 +1,6 @@
 {
   "name": "Plutonia",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "main": "src/app.js",
   "scripts": {
     "start": "cross-env NODE_ENV=dev electron .",
@@ -24,6 +24,9 @@
     "jimp": "^1.6.0",
     "nodemon": "^3.1.7",
     "png2icons": "^2.0.1"
+  },
+  "optionalDependencies": {
+    "dmg-license": "^1.0.11"
   },
   "repository": {
     "type": "git",
