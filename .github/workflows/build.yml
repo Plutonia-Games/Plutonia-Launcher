@@ -50,21 +50,64 @@ jobs:
         run: npm ci
         shell: bash
 
-      # Add this step to modify common.nsh file
+      # Fix CRCCheck issue for NSIS on Windows
       - name: Fix NSIS CRCCheck issue
         if: matrix.os == 'windows-latest'
         run: |
           powershell -Command "Add-Content -Path './node_modules/app-builder-lib/templates/nsis/common.nsh' -Value '`nCRCCheck off'"
 
-      - name: Build
+      # Build without publishing
+      - name: Build (no publish)
         env:
           GH_TOKEN: ${{ secrets.github_token }}
         run: npm run build
         shell: bash
 
+      # Sign executable on Windows
       - name: Sign with EV cert on Azure (Windows)
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           dotnet tool install --global AzureSignTool 
           AzureSignTool sign -kvu "${{ secrets.AZURE_KEY_VAULT_URI }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" --azure-key-vault-tenant-id "${{ secrets.AZURE_TENANT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc ${{ secrets.AZURE_CERT_NAME }} -tr http://timestamp.globalsign.com/tsa/advanced -v "dist/Plutonia-win-x64.exe"
+
+      # Upload signed (or built) artifacts
+      - name: Upload signed artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: signed-executables-${{ matrix.os }}
+          path: dist/*
+
+  upload-release-assets:
+    needs: build-launcher
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts (Windows)
+        uses: actions/download-artifact@v3
+        with:
+          name: signed-executables-windows-latest
+          path: dist/windows
+
+      - name: Download artifacts (macOS)
+        uses: actions/download-artifact@v3
+        with:
+          name: signed-executables-macos-14
+          path: dist/macos
+
+      - name: Download artifacts (Linux)
+        uses: actions/download-artifact@v3
+        with:
+          name: signed-executables-ubuntu-latest
+          path: dist/linux
+
+      # Upload files to GitHub Release
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/windows/*
+            dist/macos/*
+            dist/linux/*
+          tag_name: ${{ env.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

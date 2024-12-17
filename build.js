@@ -87,6 +87,7 @@ class Index {
             {
               provider: "github",
               releaseType: "release",
+              publish: "never",
             },
           ],
           win: {
