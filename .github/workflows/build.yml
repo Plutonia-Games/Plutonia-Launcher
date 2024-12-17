@@ -1,4 +1,3 @@
-# module du helios launcher
 name: Launcher Build
 on:
   push:
@@ -56,11 +55,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           powershell -Command "Add-Content -Path './node_modules/app-builder-lib/templates/nsis/common.nsh' -Value '`nCRCCheck off'"
-
-      - name: Install Azure CLI (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
       - name: Build
         env:
