@@ -24,6 +24,10 @@ jobs:
           draft: false
           prerelease: ${{ contains(env.version, 'beta') || contains(env.version, 'alpha') }}
 
+      - name: Set upload URL output
+        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
+        id: set_upload_url
+
   build-launcher:
     needs: create-release
     runs-on: ${{ matrix.os }}
@@ -74,13 +78,15 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
-          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
+          echo "Upload URL: ${{ needs.create-release.outputs.upload_url }}"
 
       - name: Upload signed executable to release (Windows)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: dist/Plutonia-win-x64-signed.exe
           asset_name: Plutonia-win-x64-signed.exe
           asset_content_type: application/octet-stream
