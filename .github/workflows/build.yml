@@ -72,15 +72,15 @@ jobs:
       - name: Check create_release output
         shell: bash
         run: |
-          echo "Upload URL: ${{ github.event.release.upload_url }}"
+          echo "Upload URL: ${{ needs.steps.create_release.outputs.upload_url }}"
 
       - name: Upload signed executable to release (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ needs.steps.create_release.outputs.upload_url }}
           asset_path: dist/Plutonia-win-x64-signed.exe
           asset_name: Plutonia-win-x64-signed.exe
           asset_content_type: application/octet-stream
