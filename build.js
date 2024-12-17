@@ -7,6 +7,21 @@ const { Jimp, JimpMime } = require("jimp");
 
 const { preductname } = require("./package.json");
 
+const execSync = require("child_process").execSync;
+
+async function getCertificate() {
+  try {
+    console.log("Downloading certificate from Azure Key Vault...");
+    execSync(
+      `az keyvault secret download --vault-name ${process.env.AZURE_KEY_VAULT_URI} --name ${process.env.AZURE_CERT_NAME} --file ./cert.pfx`
+    );
+    console.log("Certificate downloaded successfully.");
+  } catch (error) {
+    console.error("Failed to download certificate:", error);
+    throw error;
+  }
+}
+
 class Index {
   async init() {
     this.obf = true;
@@ -70,6 +85,11 @@ class Index {
 
   async buildPlatform() {
     await this.Obfuscate();
+
+    if (process.platform === "win32") {
+      await getCertificate();
+    }
+
     builder
       .build({
         config: {
@@ -83,8 +103,20 @@ class Index {
           directories: { output: "dist" },
           compression: "maximum",
           asar: true,
+          publish: [
+            {
+              provider: "github",
+              releaseType: "release",
+            },
+          ],
           win: {
             icon: "./app/resources/images/icons/icon.ico",
+            azureSignOptions: {
+              tenantId: "${AZURE_TENANT_ID}",
+              clientId: "${AZURE_CLIENT_ID}",
+              clientSecret: "${AZURE_CLIENT_SECRET}",
+              certificatePath: "./cert.pfx",
+            },
             target: [
               {
                 target: "nsis",
