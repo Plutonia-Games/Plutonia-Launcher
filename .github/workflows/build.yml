@@ -62,8 +62,8 @@ jobs:
         run: npm run build
         shell: bash
 
-      - name: Generate Installer and Sign with EV cert on Azure (Windows)
-        if: ${{ matrix.name == 'Windows' }}
+      - name: Sign with EV cert on Azure (Windows)
+        if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           dotnet tool install --global AzureSignTool 
