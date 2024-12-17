@@ -70,7 +70,13 @@ jobs:
           AzureSignTool sign -kvu "${{ secrets.AZURE_KEY_VAULT_URI }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" --azure-key-vault-tenant-id "${{ secrets.AZURE_TENANT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc ${{ secrets.AZURE_CERT_NAME }} -tr http://timestamp.globalsign.com/tsa/advanced -td sha256 "dist/Plutonia-win-x64.exe"
           mv dist/Plutonia-win-x64.exe dist/Plutonia-win-x64-signed.exe
 
-      - name: Upload signed executable to release
+      - name: Check create_release output (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
+
+      - name: Upload signed executable to release (Windows)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
         with:
