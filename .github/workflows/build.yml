@@ -24,10 +24,6 @@ jobs:
           draft: false
           prerelease: ${{ contains(env.version, 'beta') || contains(env.version, 'alpha') }}
 
-      - name: Set upload URL output
-        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
-        id: set_upload_url
-
   build-launcher:
     needs: create-release
     runs-on: ${{ matrix.os }}
@@ -38,7 +34,7 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -54,8 +50,7 @@ jobs:
         run: npm ci
         shell: bash
 
-      # Add this step to modify common.nsh file
-      - name: Fix NSIS CRCCheck issue
+      - name: Fix NSIS CRCCheck issue (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           powershell -Command "Add-Content -Path './node_modules/app-builder-lib/templates/nsis/common.nsh' -Value '`nCRCCheck off'"
@@ -74,7 +69,7 @@ jobs:
           AzureSignTool sign -kvu "${{ secrets.AZURE_KEY_VAULT_URI }}" -kvi "${{ secrets.AZURE_CLIENT_ID }}" --azure-key-vault-tenant-id "${{ secrets.AZURE_TENANT_ID }}" -kvs "${{ secrets.AZURE_CLIENT_SECRET }}" -kvc ${{ secrets.AZURE_CERT_NAME }} -tr http://timestamp.globalsign.com/tsa/advanced -td sha256 "dist/Plutonia-win-x64.exe"
           mv dist/Plutonia-win-x64.exe dist/Plutonia-win-x64-signed.exe
 
-      - name: Check create_release output (Windows)
+      - name: Check create_release output
         shell: bash
         run: |
           echo "Upload URL: ${{ needs.create-release.outputs.upload_url }}"
