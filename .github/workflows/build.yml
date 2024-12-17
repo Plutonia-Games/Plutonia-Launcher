@@ -75,7 +75,6 @@ jobs:
           mv dist/Plutonia-win-x64.exe dist/Plutonia-win-x64-signed.exe
 
       - name: Check create_release output (Windows)
-        if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           echo "Upload URL: ${{ needs.create-release.outputs.upload_url }}"
