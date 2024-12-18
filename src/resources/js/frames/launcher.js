@@ -151,7 +151,9 @@ playButton.addEventListener("click", async (_) => {
   const options = await ipcRenderer.invoke("get-from-file", OPTIONS_FILE_NAME);
 
   try {
-    latestVersion = await downloadJar(gamePath, options.prerelease);
+    const prerelease = options?.prerelease ?? false;
+
+    latestVersion = await downloadJar(gamePath, prerelease);
   } catch (error) {
     console.error("Impossible de récupérer la version :", error);
     setErrorMessage("Impossible de récupérer la version...");
