@@ -9,8 +9,9 @@ const { preductname } = require("./package.json");
 
 class Index {
   async init() {
-    this.obf = true;
+    this.obf = false;
     this.Fileslist = [];
+
     process.argv.forEach(async (val) => {
       if (val.startsWith("--icon")) {
         return this.iconSet(val.split("=")[1]);
@@ -23,31 +24,41 @@ class Index {
 
       if (val.startsWith("--build")) {
         let buildType = val.split("=")[1];
-        if (buildType == "platform") return await this.buildPlatform();
+
+        if (buildType == "platform") {
+          return await this.buildPlatform();
+        }
       }
     });
   }
 
   async Obfuscate() {
-    if (fs.existsSync("./app")) fs.rmSync("./app", { recursive: true });
+    if (fs.existsSync("./app")) {
+      fs.rmSync("./app", { recursive: true });
+    }
 
     for (let path of this.Fileslist) {
       let fileName = path.split("/").pop();
       let extFile = fileName.split(".").pop();
       let folder = path.replace(`/${fileName}`, "").replace("src", "app");
 
-      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+      if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+      }
 
       if (extFile == "js") {
         let code = fs.readFileSync(path, "utf8");
         code = code.replace(/src\//g, "app/");
+
         if (this.obf) {
           await new Promise((resolve) => {
             console.log(`Obfuscate ${path}`);
+
             let obf = JavaScriptObfuscator.obfuscate(code, {
               optionsPreset: "medium-obfuscation",
               disableConsoleOutput: false,
             });
+
             resolve(
               fs.writeFileSync(
                 `${folder}/${fileName}`,
@@ -57,7 +68,8 @@ class Index {
             );
           });
         } else {
-          console.log(`Copy ${path}`);
+          console.log(`Copying ${path}...`);
+
           fs.writeFileSync(`${folder}/${fileName}`, code, {
             encoding: "utf-8",
           });
@@ -132,7 +144,7 @@ class Index {
         },
       })
       .then(() => {
-        console.log("Build finished !");
+        console.log("Build finished with success!");
       })
       .catch((err) => {
         console.error("Error during build: ", err);
@@ -142,13 +154,22 @@ class Index {
   getFiles(path, file = []) {
     if (fs.existsSync(path)) {
       let files = fs.readdirSync(path);
-      if (files.length == 0) file.push(path);
+
+      if (files.length == 0) {
+        file.push(path);
+      }
+
       for (let i in files) {
         let name = `${path}/${files[i]}`;
-        if (fs.statSync(name).isDirectory()) this.getFiles(name, file);
-        else file.push(name);
+
+        if (fs.statSync(name).isDirectory()) {
+          this.getFiles(name, file);
+        } else {
+          file.push(name);
+        }
       }
     }
+
     return file;
   }
 
