@@ -1,13 +1,13 @@
 {
   "name": "Plutonia",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "A powerful launcher for Plutonia, built with Electron and JavaScript.",
   "author": "Plutonia Team",
   "main": "src/app.js",
   "scripts": {
     "start": "cross-env NODE_ENV=dev electron .",
     "dev": "cross-env NODE_ENV=dev nodemon --exec npm start",
-    "build": "node build.js --obf=true --build=platform",
+    "build": "node build.js --obf=false --build=platform",
     "icon": "node build.js --icon=https://img.plutonia-mc.fr/iconLauncher.png"
   },
   "dependencies": {
