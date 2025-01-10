@@ -89,7 +89,7 @@ class Index {
           generateUpdatesFilesForAllChannels: false,
           appId: preductname,
           productName: preductname,
-          copyright: "Copyright © 2014-2024 Plutonia",
+          copyright: "Copyright © 2014-2025 Plutonia",
           artifactName: "${productName}-${os}-${arch}.${ext}",
           extraMetadata: { main: "app/app.js" },
           files: ["app/**/*", "package.json", "LICENSE.md"],
