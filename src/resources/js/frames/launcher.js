@@ -1,6 +1,11 @@
 "use strict";
 
 /* Imports */
+const { setTimeout, clearTimeout } = require("timers");
+
+global.setTimeout = setTimeout;
+global.clearTimeout = clearTimeout;
+
 const { ipcRenderer } = require("electron");
 
 const path = require("path");
