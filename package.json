@@ -1,6 +1,6 @@
 {
   "name": "Plutonia",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A powerful launcher for Plutonia, built with Electron and JavaScript.",
   "author": "Plutonia Team",
   "main": "src/app.js",
