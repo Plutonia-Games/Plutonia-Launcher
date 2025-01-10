@@ -201,7 +201,7 @@ const VERSION_MANIFEST_URL = "https://versions.plutonia.download/manifest.json";
 async function getVersionList(options = {}) {
   const response = await request(VERSION_MANIFEST_URL, {
     dispatcher: options.dispatcher,
-    throwOnError: true,
+    // throwOnError: true, <-- Supprimé car non supporté dans Undici 7.x
   });
 
   return await response.body.json();
