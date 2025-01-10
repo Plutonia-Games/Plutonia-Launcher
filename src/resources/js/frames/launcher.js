@@ -284,14 +284,16 @@ async function downloadJar(gamePath, prerelease) {
 
   await installTask.startAndWait({
     onUpdate(task, chunkSize) {
-      const percent = Math.round(
-        (installTask.progress / installTask.total) * 100
-      );
+      if (chunkSize > 0) {
+        const percent = Math.round(
+          (installTask.progress / installTask.total) * 100
+        );
 
-      console.log(`Récupération de la version... (${percent}%)`);
-      setMessage(`Récupération de la version en cours... (${percent}%)`);
+        console.log(`Récupération de la version... (${percent}%)`);
+        setMessage(`Récupération de la version en cours... (${percent}%)`);
 
-      setProgress(percent);
+        setProgress(percent);
+      }
     },
   });
 
@@ -311,14 +313,16 @@ async function downloadLibrairies(resolvedVersion) {
 
   await installTask.startAndWait({
     onUpdate(task, chunkSize) {
-      const percent = Math.round(
-        (installTask.progress / installTask.total) * 100
-      );
+      if (chunkSize > 0) {
+        const percent = Math.round(
+          (installTask.progress / installTask.total) * 100
+        );
 
-      console.log(`Téléchargement des librairies... (${percent}%)`);
-      setMessage(`Téléchargement des librairies en cours... (${percent}%)`);
+        console.log(`Téléchargement des librairies... (${percent}%)`);
+        setMessage(`Téléchargement des librairies en cours... (${percent}%)`);
 
-      setProgress(percent);
+        setProgress(percent);
+      }
     },
   });
 
@@ -338,14 +342,16 @@ async function downloadAssets(resolvedVersion) {
 
   await installTask.startAndWait({
     onUpdate(task, chunkSize) {
-      const percent = Math.round(
-        (installTask.progress / installTask.total) * 100
-      );
+      if (chunkSize > 0) {
+        const percent = Math.round(
+          (installTask.progress / installTask.total) * 100
+        );
 
-      console.log(`Téléchargement des assets en cours... (${percent}%)`);
-      setMessage(`Téléchargement des assets en cours... (${percent}%)`);
+        console.log(`Téléchargement des assets en cours... (${percent}%)`);
+        setMessage(`Téléchargement des assets en cours... (${percent}%)`);
 
-      setProgress(percent);
+        setProgress(percent);
+      }
     },
   });
 
