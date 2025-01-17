@@ -15,12 +15,12 @@
     "@xmcl/installer": "^6.0.0",
     "decompress": "^4.2.1",
     "electron-updater": "^6.3.9",
-    "fs-extra": "^11.2.0",
+    "fs-extra": "^11.3.0",
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "electron": "^33.3.1",
+    "electron": "^34.0.0",
     "electron-builder": "^25.1.8",
     "javascript-obfuscator": "^4.1.1",
     "jimp": "^1.6.0",
