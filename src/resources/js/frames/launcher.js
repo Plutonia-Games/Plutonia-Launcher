@@ -160,7 +160,7 @@ playButton.addEventListener("click", async (_) => {
 
     latestVersion = await downloadJar(gamePath, prerelease);
   } catch (error) {
-    console.error("Impossible de récupérer la version :", error);
+    console.error("Impossible de récupérer la version :", error.message);
     setErrorMessage("Impossible de récupérer la version...");
     return disableFields(false);
   }
@@ -311,6 +311,8 @@ async function downloadLibrairies(resolvedVersion) {
   console.log("Vérification des librairies...");
   setMessage("Vérification des librairies...");
 
+  setProgress(0);
+
   await installTask.startAndWait({
     onUpdate(task, chunkSize) {
       if (chunkSize > 0) {
@@ -328,6 +330,8 @@ async function downloadLibrairies(resolvedVersion) {
 
   console.log("Vérification des librairies terminé.");
   setMessage("Vérification des librairies terminé.");
+
+  setProgress(100);
 }
 
 async function downloadAssets(resolvedVersion) {
