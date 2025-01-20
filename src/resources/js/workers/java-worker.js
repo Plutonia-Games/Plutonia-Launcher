@@ -5,11 +5,13 @@ const path = require("path");
 const os = require("os");
 
 const crypto = require("crypto");
-const decompress = require("decompress");
-const nodeFetch = require("node-fetch");
+
+const AdmZip = require("adm-zip");
+const progress = require("progress-stream");
+
+const { request } = require("undici");
 
 const EventEmitter = require("events");
-const Downloader = require("../downloader.js");
 
 class JavaWorker extends EventEmitter {
   /**
@@ -19,7 +21,7 @@ class JavaWorker extends EventEmitter {
    * @returns {Object} - Contient le chemin vers Java ou une erreur.
    */
   async getJava(options, versionDownload = 8) {
-    this.emit("started");
+    this.emit("check-start");
 
     const javaVersionURL = `https://api.adoptium.net/v3/assets/latest/${versionDownload}/hotspot`;
     const javaVersions = await fetchJavaVersions(javaVersionURL);
@@ -52,14 +54,15 @@ class JavaWorker extends EventEmitter {
         url,
         checksum,
       });
-      await reorganizeExtractedFiles(pathFolder);
+
+      reorganizeExtractedFiles(pathFolder);
 
       if (platform !== "windows") {
         fs.chmodSync(javaPath, 0o755);
       }
     }
 
-    this.emit("finished");
+    this.emit("check-finish");
     return { files: [], path: javaPath };
   }
 
@@ -105,17 +108,13 @@ class JavaWorker extends EventEmitter {
     }
 
     if (!fs.existsSync(filePath)) {
-      this.emit("start-download", url);
+      //this.emit("download-start", url);
 
       fs.mkdirSync(pathFolder, { recursive: true });
-      const download = new Downloader();
 
-      download.on("progress", (downloaded, size) => {
-        this.emit("progress", downloaded, size, fileName);
-      });
+      await this.downloadFile(url, pathFolder, fileName);
 
-      await download.downloadFile(url, pathFolder, fileName);
-      this.emit("finished-download");
+      //this.emit("download-finish");
     }
 
     const downloadedChecksum = await getFileHash(filePath);
@@ -126,19 +125,86 @@ class JavaWorker extends EventEmitter {
   }
 
   /**
+   * Utilise undici pour télécharger le fichier et gérer les redirections.
+   */
+  async downloadFile(url, pathFolder, fileName) {
+    try {
+      let { statusCode, headers, body } = await request(url);
+
+      if (statusCode === 302) {
+        return this.downloadFile(headers.location, pathFolder, fileName);
+      }
+
+      if (statusCode !== 200) {
+        throw new Error(
+          `Failed to download file. HTTP status code: ${statusCode}.`
+        );
+      }
+
+      // Récupérer la taille du fichier à partir des en-têtes de la réponse
+      const contentLength = headers["content-length"];
+      if (!contentLength) {
+        throw new Error("File size is not available in headers.");
+      }
+
+      const filePath = path.join(pathFolder, fileName);
+
+      const downloadProgress = progress({
+        length: parseInt(contentLength, 10),
+        time: 100,
+      });
+
+      const fileStream = fs.createWriteStream(filePath);
+
+      body.pipe(downloadProgress).pipe(fileStream);
+
+      return new Promise((resolve, reject) => {
+        downloadProgress.on("progress", (progressInfo) => {
+          this.emit("download-progress", Math.round(progressInfo.percentage));
+        });
+
+        body.on("end", () => {
+          resolve();
+        });
+
+        body.on("error", (err) => {
+          reject(err);
+        });
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Extrait un fichier compressé dans un dossier spécifié.
    */
-  async extract(filePath, destPath) {
-    try {
-      this.emit("start-decompress");
+  async extract(source, destination) {
+    this.emit("decompress-start");
 
-      await decompress(filePath, destPath);
+    const zip = new AdmZip(source);
+    const zipEntries = zip.getEntries();
 
-      this.emit("finished-decompress");
-    } catch (err) {
-      console.error("Error during extraction:", err);
-      throw err;
+    const totalFiles = zipEntries.length;
+    let filesExtracted = 0;
+
+    for (const entry of zipEntries) {
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          zip.extractEntryTo(entry, destination, true, true);
+          filesExtracted++;
+
+          this.emit(
+            "decompress-progress",
+            Math.round((filesExtracted / totalFiles) * 100)
+          );
+
+          resolve();
+        }, 0);
+      });
     }
+
+    this.emit("decompress-finish");
   }
 }
 
@@ -146,20 +212,35 @@ class JavaWorker extends EventEmitter {
  * Récupère les versions de Java depuis une URL donnée.
  */
 async function fetchJavaVersions(url) {
-  const response = await nodeFetch(url);
-  return response.json();
+  try {
+    const { statusCode, body } = await request(url);
+    if (statusCode !== 200) {
+      throw new Error(
+        `Failed to fetch Java versions. HTTP status code: ${statusCode}`
+      );
+    }
+
+    const jsonResponse = await body.json();
+    return jsonResponse;
+  } catch (error) {
+    console.error("Error during fetching Java versions:", error);
+    throw error;
+  }
 }
 
 /**
  * Détermine la version de Java compatible avec la plateforme et l'architecture.
  */
 function findJavaVersion(javaVersions, options, platform, arch) {
-  return javaVersions.find(
-    ({ binary }) =>
-      binary.image_type === options.java.type &&
-      binary.architecture === arch &&
-      binary.os === platform
-  );
+  const { type } = options.java;
+
+  return javaVersions.find(({ binary }) => {
+    const matchesType = binary.image_type === type;
+    const matchesArch = binary.architecture === arch;
+    const matchesPlatform = binary.os === platform;
+
+    return matchesType && matchesArch && matchesPlatform;
+  });
 }
 
 /**

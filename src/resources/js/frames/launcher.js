@@ -213,37 +213,49 @@ async function getVersionList(options = {}) {
 }
 
 async function downloadJava(gamePath) {
-  console.log("Vérification de Java...");
-  setMessage("Vérification de Java...");
+  console.log("Vérification de java...");
+  setMessage("Vérification de java...");
 
   setProgress(0);
 
-  javaWorker.on("progress", (downloaded, size, fileName) => {
-    const percent = Math.round((downloaded / size) * 100);
-
-    console.log(`Téléchargement de Java en cours... (${percent}%)`);
-    setMessage(`Téléchargement de Java en cours... (${percent}%)`);
-
-    setProgress(percent);
-  });
-
-  javaWorker.on("finished-download", () => {
-    console.log(`Téléchargement de Java terminé.`);
-    setMessage("Téléchargement de Java terminé.");
-
-    setProgress(100);
-  });
-
-  javaWorker.on("start-decompress", () => {
-    console.log(`Décompression de Java en cours...`);
-    setMessage("Décompression de Java en cours...");
+  javaWorker.on("download-start", (url) => {
+    console.log(`Téléchargement de java en cours...`);
+    setMessage(`Téléchargement de java en cours...`);
 
     setProgress(0);
   });
 
-  javaWorker.on("finished-decompress", () => {
-    console.log(`Décompression de Java terminé.`);
-    setMessage("Décompression de Java terminé.");
+  javaWorker.on("download-progress", (percent) => {
+    console.log(`Téléchargement de java en cours... (${percent}%)`);
+    setMessage(`Téléchargement de java en cours... (${percent}%)`);
+
+    setProgress(percent);
+  });
+
+  javaWorker.on("download-finish", () => {
+    console.log(`Téléchargement de java terminé.`);
+    setMessage("Téléchargement de java terminé.");
+
+    setProgress(100);
+  });
+
+  javaWorker.on("decompress-start", () => {
+    console.log(`Décompression de java en cours...`);
+    setMessage("Décompression de java en cours...");
+
+    setProgress(0);
+  });
+
+  javaWorker.on("decompress-progress", (percent) => {
+    console.log(`Décompression de java... (${percent}%)`);
+    setMessage(`Décompression de java... (${percent}%)`);
+
+    setProgress(percent);
+  });
+
+  javaWorker.on("decompress-finish", () => {
+    console.log(`Décompression de java terminée.`);
+    setMessage("Décompression de java terminée.");
 
     setProgress(100);
   });
@@ -253,8 +265,8 @@ async function downloadJava(gamePath) {
     8
   );
 
-  console.log("Vérification de Java terminé.");
-  setMessage("Vérification de Java terminé.");
+  console.log("Vérification de java terminé.");
+  setMessage("Vérification de java terminé.");
 
   setProgress(100);
 
