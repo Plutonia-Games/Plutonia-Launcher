@@ -1,10 +1,13 @@
 "use strict";
 
 /* Imports */
+
+/* Fix undici */
 const { setTimeout, clearTimeout } = require("timers");
 
 global.setTimeout = setTimeout;
 global.clearTimeout = clearTimeout;
+/* Fix undici */
 
 const { ipcRenderer } = require("electron");
 
