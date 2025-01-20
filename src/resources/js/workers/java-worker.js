@@ -7,6 +7,8 @@ const os = require("os");
 const crypto = require("crypto");
 
 const AdmZip = require("adm-zip");
+const decompress = require("decompress");
+
 const progress = require("progress-stream");
 
 const { request } = require("undici");
@@ -141,7 +143,6 @@ class JavaWorker extends EventEmitter {
         );
       }
 
-      // Récupérer la taille du fichier à partir des en-têtes de la réponse
       const contentLength = headers["content-length"];
       if (!contentLength) {
         throw new Error("File size is not available in headers.");
@@ -158,17 +159,24 @@ class JavaWorker extends EventEmitter {
 
       body.pipe(downloadProgress).pipe(fileStream);
 
-      return new Promise((resolve, reject) => {
-        downloadProgress.on("progress", (progressInfo) => {
-          this.emit("download-progress", Math.round(progressInfo.percentage));
-        });
+      let isCompleted = false;
 
+      return new Promise((resolve, reject) => {
         body.on("end", () => {
-          resolve();
+          if (!isCompleted) {
+            isCompleted = true;
+            resolve();
+          }
         });
 
         body.on("error", (err) => {
           reject(err);
+        });
+
+        downloadProgress.on("progress", (progressInfo) => {
+          if (!isCompleted) {
+            this.emit("download-progress", Math.round(progressInfo.percentage));
+          }
         });
       });
     } catch (error) {
@@ -180,8 +188,25 @@ class JavaWorker extends EventEmitter {
    * Extrait un fichier compressé dans un dossier spécifié.
    */
   async extract(source, destination) {
+    const extname = path.extname(source).toLowerCase();
+
     this.emit("decompress-start");
 
+    if (extname === ".zip") {
+      await this.extractZip(source, destination);
+    } else {
+      try {
+        await decompress(source, destination);
+      } catch (err) {
+        console.error("Error during extraction:", err);
+        throw err;
+      }
+    }
+
+    this.emit("decompress-finish");
+  }
+
+  async extractZip(source, destination) {
     const zip = new AdmZip(source);
     const zipEntries = zip.getEntries();
 
@@ -203,8 +228,6 @@ class JavaWorker extends EventEmitter {
         }, 0);
       });
     }
-
-    this.emit("decompress-finish");
   }
 }
 

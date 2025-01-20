@@ -1,5 +1,6 @@
 const fs = require("fs-extra");
 const builder = require("electron-builder");
+
 const JavaScriptObfuscator = require("javascript-obfuscator");
 
 const { preductname } = require("./package.json");
@@ -10,10 +11,6 @@ class Index {
     this.Fileslist = [];
 
     process.argv.forEach(async (val) => {
-      if (val.startsWith("--icon")) {
-        return this.iconSet(val.split("=")[1]);
-      }
-
       if (val.startsWith("--obf")) {
         this.obf = JSON.parse(val.split("=")[1]);
         this.Fileslist = this.getFiles("src");
