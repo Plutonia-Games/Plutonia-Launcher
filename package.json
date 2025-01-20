@@ -7,8 +7,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=dev electron .",
     "dev": "cross-env NODE_ENV=dev nodemon --exec npm start",
-    "build": "node build.js --obf=false --build=platform",
-    "icon": "node build.js --icon=https://img.plutonia-mc.fr/iconLauncher.png"
+    "build": "node build.js --obf=false --build=platform"
   },
   "dependencies": {
     "@xmcl/core": "^2.14.0",
@@ -25,9 +24,7 @@
     "electron": "^34.0.0",
     "electron-builder": "^25.1.8",
     "javascript-obfuscator": "^4.1.1",
-    "jimp": "^1.6.0",
-    "nodemon": "^3.1.9",
-    "png2icons": "^2.0.1"
+    "nodemon": "^3.1.9"
   },
   "repository": {
     "type": "git",

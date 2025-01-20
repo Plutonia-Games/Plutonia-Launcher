@@ -108,13 +108,13 @@ class JavaWorker extends EventEmitter {
     }
 
     if (!fs.existsSync(filePath)) {
-      //this.emit("download-start", url);
+      this.emit("download-start", url);
 
       fs.mkdirSync(pathFolder, { recursive: true });
 
       await this.downloadFile(url, pathFolder, fileName);
 
-      //this.emit("download-finish");
+      this.emit("download-finish");
     }
 
     const downloadedChecksum = await getFileHash(filePath);

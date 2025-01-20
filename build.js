@@ -1,9 +1,6 @@
 const fs = require("fs-extra");
 const builder = require("electron-builder");
 const JavaScriptObfuscator = require("javascript-obfuscator");
-const nodeFetch = require("node-fetch");
-const png2icons = require("png2icons");
-const { Jimp, JimpMime } = require("jimp");
 
 const { preductname } = require("./package.json");
 
@@ -171,40 +168,6 @@ class Index {
     }
 
     return file;
-  }
-
-  async iconSet(url) {
-    let Buffer = await nodeFetch(url);
-
-    if (Buffer.status == 200) {
-      Buffer = await Buffer.buffer();
-      const image = await Jimp.read(Buffer);
-
-      if (!fs.existsSync("src/resources/images/icons")) {
-        fs.mkdirSync("src/resources/images/icons", { recursive: true });
-      }
-
-      Buffer = await image
-        .clone()
-        .resize({ w: 256, h: 256 })
-        .getBuffer(JimpMime.png);
-
-      fs.writeFileSync(
-        "src/assets/images/icons/icon.icns",
-        png2icons.createICNS(Buffer, png2icons.BILINEAR, 0)
-      );
-
-      // Clean icon generated with https://redketchup.io/icon-editor, and PNGs.
-      /* fs.writeFileSync(
-        'src/assets/images/icon.ico',
-        png2icons.createICO(Buffer, png2icons.BILINEAR, 0, true)
-      ); */
-
-      fs.writeFileSync("src/resources/images/icons/icon.png", Buffer);
-      console.log("New icon set!");
-    } else {
-      console.log("Connection error!");
-    }
   }
 }
 
