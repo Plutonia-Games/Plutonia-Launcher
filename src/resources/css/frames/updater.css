@@ -1,0 +1,57 @@
+@import "../font.css";
+
+body {
+  width: 400px;
+  height: 500px;
+  -webkit-app-region: drag;
+  background-color: #161616;
+  font-family: "LemonMilk-Pro", sans-serif;
+  letter-spacing: 1.5px;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+  margin: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.splash-logo {
+  position: absolute;
+  top: 180px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 140px;
+  transition: opacity 0.3s, top 1.5s;
+  opacity: 0;
+}
+
+.splash-logo.opacity {
+  opacity: 1;
+}
+
+.splash-logo.translate {
+  top: 129px;
+}
+
+.message {
+  position: absolute;
+  width: 100%;
+  max-width: 90%;
+  text-align: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 1.5s;
+  white-space: normal;
+  overflow: hidden;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 347px;
+  font-size: 18px;
+}
+
+.message.opacity {
+  opacity: 1;
+}

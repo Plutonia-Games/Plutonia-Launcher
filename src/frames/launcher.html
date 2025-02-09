@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
+    <link rel="stylesheet" href="../resources/css/frames/launcher.css" />
+  </head>
+
+  <body class="drag">
+    <div class="close no-drag"></div>
+
+    <div class="username no-drag">
+      <input
+        type="text"
+        spellcheck="false"
+        maxlength="16"
+        placeholder="Nom d'utilisateur"
+      />
+    </div>
+
+    <div class="password no-drag">
+      <input
+        type="password"
+        maxlength="32"
+        placeholder="Mot de passe"
+        required
+      />
+    </div>
+
+    <div class="play no-drag"></div>
+    <div class="settings no-drag"></div>
+
+    <div class="register no-drag">
+      Mot de passe oublié <span style="color: orange">ou</span> pas encore
+      inscrit ?
+    </div>
+
+    <div class="no-drag">
+      <div class="empty-progress"></div>
+      <div class="progress"></div>
+    </div>
+
+    <div class="progress-text no-drag">Veuillez entrer vos identifiants.</div>
+
+    <script src="../resources/js/frames/launcher.js" type="module"></script>
+  </body>
+</html>

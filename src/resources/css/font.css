@@ -1,0 +1,7 @@
+/* Poppins */
+
+@font-face {
+  font-family: "LemonMilk-Pro";
+  src: url("../fonts/lemonmilk.woff2") format("woff2");
+  font-display: swap;
+}

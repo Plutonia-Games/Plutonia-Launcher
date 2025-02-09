@@ -1,0 +1,33 @@
+{
+  "name": "Plutonia",
+  "version": "1.1.8",
+  "description": "A powerful launcher for Plutonia, built with Electron and JavaScript.",
+  "author": "Plutonia Team",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=dev electron .",
+    "dev": "cross-env NODE_ENV=dev nodemon --exec npm start",
+    "build": "node build.js --obf=false --build=platform"
+  },
+  "dependencies": {
+    "@xmcl/core": "^2.14.0",
+    "@xmcl/file-transfer": "^2.0.1",
+    "@xmcl/installer": "^6.0.1",
+    "@xmcl/task": "^4.1.1",
+    "adm-zip": "^0.5.16",
+    "axios": "^1.7.9",
+    "decompress": "^4.2.1",
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^34.1.1",
+    "electron-builder": "^25.1.8",
+    "javascript-obfuscator": "^4.1.1",
+    "nodemon": "^3.1.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Plutonia-Games/Plutonia-Launcher.git"
+  }
+}

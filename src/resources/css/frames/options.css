@@ -1,0 +1,66 @@
+@import "../font.css";
+
+body {
+  font-family: "LemonMilk-Pro", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  width: 243px;
+  height: 170px;
+  user-select: none;
+}
+
+.settings-container {
+  padding: 12px;
+  width: 100%;
+  box-shadow: none;
+}
+
+.settings-group {
+  margin-bottom: 12px;
+}
+
+.settings-group label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+
+.dropdown {
+  width: 100%;
+  padding: 1px;
+  border: 1px solid #999;
+  background-color: white;
+  font-size: 12px;
+}
+
+.options-list {
+  margin-top: 3px;
+}
+
+.option {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.option input {
+  margin-right: 6px;
+}
+
+.confirm-button {
+  width: 100%;
+  padding: 2px;
+  background-color: #fff;
+  border: 1px solid #999;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-top: 8px;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.confirm-button:hover {
+  background-color: #e0e0e0;
+}

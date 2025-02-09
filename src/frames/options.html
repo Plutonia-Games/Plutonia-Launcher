@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
+    <link rel="stylesheet" href="../resources/css/frames/options.css" />
+  </head>
+
+  <body>
+    <div class="settings-container">
+      <div class="settings-group">
+        <label for="memory-select">Mémoire RAM:</label>
+        <select id="memory-select" class="dropdown">
+          <option value="2G" selected>2G</option>
+          <option value="4G">4G</option>
+          <option value="6G">6G</option>
+          <option value="8G">8G</option>
+          <option value="10G">10G</option>
+          <option value="12G">12G</option>
+        </select>
+      </div>
+
+      <div class="settings-group">
+        <label>Modules additionnels:</label>
+        <div class="options-list">
+          <label class="option">
+            <input type="checkbox" id="enable-tabbychat" />
+            Activer TabbyChat
+          </label>
+          <label class="option">
+            <input type="checkbox" id="enable-prerelease" />
+            Utiliser la version "Beta"
+          </label>
+        </div>
+      </div>
+
+      <button class="confirm-button">Confirmer</button>
+    </div>
+
+    <script src="../resources/js/frames/options.js" type="module"></script>
+  </body>
+</html>
