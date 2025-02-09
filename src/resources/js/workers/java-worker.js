@@ -9,8 +9,8 @@ const axios = require("axios");
 const { download } = require("@xmcl/file-transfer");
 const { BaseTask } = require("@xmcl/task");
 
-const AdmZip = require("adm-zip");
-const decompress = require("decompress");
+const sevenBin = require("7zip-bin");
+const Seven = require("node-7z");
 
 const JAVA_DOWNLOAD_URL = `https://api.adoptium.net/v3/assets/latest/{version}/hotspot`;
 
@@ -93,42 +93,34 @@ class JavaExtractTask extends BaseTask {
   }
 
   async runTask() {
-    const extname = path.extname(this.source).toLowerCase();
-
-    if (extname === ".zip") {
-      await this.unzip(this.source, this.destination);
-    } else {
-      await decompress(this.source, this.destination);
-    }
-
-    fs.rmSync(this.source);
-
+    await this.unzip(this.source, this.destination);
     reorganizeExtractedFiles(this.destination);
 
     return getExecutablePath(this.destination, getSystemArch().platform);
   }
 
   async unzip(source, destination) {
-    const zip = new AdmZip(source);
-    const zipEntries = zip.getEntries();
+    fs.mkdirSync(destination);
 
-    const totalFiles = zipEntries.length;
-    let filesExtracted = 0;
+    const pathTo7zip = sevenBin.path7za;
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const extract = Seven.extractFull(source, destination, {
+          $bin: pathTo7zip,
+          $progress: true,
+        })
+          .on("end", resolve)
+          .on("error", reject);
 
-    for (const entry of zipEntries) {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          zip.extractEntryTo(entry, destination, true, true);
-          filesExtracted++;
-
-          this._progress = filesExtracted;
-          this._total = totalFiles;
-          this.update(Math.round((this._progress / this._total) * 100));
-
-          resolve();
+        extract.on("progress", (progress) => {
+          this._progress = progress.percent;
+          this._count = progress.fileCount;
+          this.update(this._progress);
         });
       });
-    }
+    });
+
+    fs.rmSync(source);
   }
 }
 

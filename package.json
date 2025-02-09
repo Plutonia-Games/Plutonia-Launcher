@@ -14,10 +14,10 @@
     "@xmcl/file-transfer": "^2.0.1",
     "@xmcl/installer": "^6.0.1",
     "@xmcl/task": "^4.1.1",
-    "adm-zip": "^0.5.16",
+    "7zip-bin": "^5.2.0",
     "axios": "^1.7.9",
-    "decompress": "^4.2.1",
-    "electron-updater": "^6.3.9"
+    "electron-updater": "^6.3.9",
+    "node-7z": "^3.0.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
